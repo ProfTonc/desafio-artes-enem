@@ -1,0 +1,1529 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Desafio Artes ENEM</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: faixa azul fixa no topo (placar: relógio + cronômetro), palco central com uma questão por vez, legível a 8 m do telão. */
+:root {
+  --azul: #004C99;          /* Azul Sesc (Pantone 288 C) */
+  --azul-forte: #003A75;
+  --amarelo: #F6BE00;       /* Amarelo Sesc (Pantone 7408 C) */
+  --cinza: #747678;         /* Cinza médio Sesc */
+  --cinza-claro: #D0D0CE;   /* Cinza claro Sesc */
+  --bg: #F3F5F9;
+  --surface: #FFFFFF;
+  --ink: #0F1C2E;
+  --ink-soft: #4A5566;
+  --line: #D6DCE6;
+  --link: #004C99;
+  --ok: #17803D;
+  --ok-bg: #E3F4E8;
+  --erro: #C0352B;
+  --erro-bg: #FBE6E4;
+  --dica-bg: #FFF5D1;
+  --dica-ink: #5A4500;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", Verdana, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", "Courier New", monospace;
+  --raio: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07152A; --surface: #0E2341; --ink: #EEF2F8; --ink-soft: #AEB9CA; --line: #24406A;
+    --link: #8DBBF2; --ok: #4CC47A; --ok-bg: #0F3622; --erro: #FF7A6E; --erro-bg: #45191A;
+    --dica-bg: #3A2F05; --dica-ink: #FFE58A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #07152A; --surface: #0E2341; --ink: #EEF2F8; --ink-soft: #AEB9CA; --line: #24406A;
+  --link: #8DBBF2; --ok: #4CC47A; --ok-bg: #0F3622; --erro: #FF7A6E; --erro-bg: #45191A;
+  --dica-bg: #3A2F05; --dica-ink: #FFE58A; color-scheme: dark;
+}
+
+html { font-size: clamp(16px, 0.55vw + 11px, 25px); }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 1rem; line-height: 1.5;
+  margin: 0;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--azul); }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--amarelo); outline-offset: 3px; }
+a { color: var(--link); }
+em { font-style: italic; }
+
+/* ---------- Faixa superior ---------- */
+.topo {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--azul); color: #fff;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0.55rem;
+  display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  box-shadow: 0 2px 0 var(--amarelo);
+}
+.marca { display: flex; flex-direction: column; gap: 0.05rem; margin-right: auto; min-width: 0; }
+.marca b { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.01em; line-height: 1.1; }
+.marca b span { color: var(--amarelo); }
+.marca small { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.painel {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--azul-forte); border-radius: 10px; padding: 0.3rem 0.6rem;
+}
+.painel .rot { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.8; line-height: 1.1; }
+.digitos { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--amarelo); font-size: 1.6rem; line-height: 1; }
+.relogio .digitos { color: #fff; font-size: 1.3rem; }
+.crono[data-estado="alerta"] .digitos { color: #FFD966; }
+.crono[data-estado="esgotado"] { background: #B3261E; }
+.crono[data-estado="esgotado"] .digitos { color: #fff; }
+@media (prefers-reduced-motion: no-preference) {
+  .crono[data-estado="esgotado"] { animation: pulsar 1s ease-in-out infinite; }
+}
+@keyframes pulsar { 50% { box-shadow: 0 0 0 6px rgba(246,190,0,.55); } }
+.btn-ic {
+  background: transparent; border: 1.5px solid rgba(255,255,255,.45); color: #fff;
+  border-radius: 8px; min-width: 2.1rem; height: 2.1rem; padding: 0 0.5rem;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700;
+}
+.btn-ic:hover { background: rgba(255,255,255,.12); }
+.btn-ic svg { width: 1rem; height: 1rem; fill: currentColor; }
+.ajuste { position: relative; }
+.pop {
+  position: absolute; right: 0; top: calc(100% + 0.5rem); z-index: 40;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+  padding: 0.9rem; width: 17rem; box-shadow: 0 12px 32px rgba(0,0,0,.25);
+  display: grid; gap: 0.7rem;
+}
+.pop label { font-weight: 700; font-size: 0.85rem; }
+.pop .linha { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; }
+.pop input[type=number] { width: 5rem; padding: 0.35rem 0.5rem; border: 1.5px solid var(--line); border-radius: 8px; background: var(--bg); }
+.chip { border: 1.5px solid var(--line); background: var(--bg); border-radius: 999px; padding: 0.2rem 0.7rem; font-size: 0.85rem; }
+.chip:hover { border-color: var(--azul); }
+.aviso-tempo {
+  width: 100%; order: 10; text-align: center; font-weight: 700;
+  background: var(--amarelo); color: #1a1300; border-radius: 8px; padding: 0.3rem 0.6rem; font-size: 0.95rem;
+}
+
+/* ---------- Palco ---------- */
+main {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 1.5rem 3rem;
+}
+.palco { max-width: 64rem; margin: 0 auto; display: grid; gap: 1.25rem; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+
+/* Início */
+.abre { display: grid; gap: 0.4rem; }
+.abre .eyebrow { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); font-weight: 700; }
+.abre h1 { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.abre p { margin: 0; color: var(--ink-soft); max-width: 46rem; }
+.grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 0.9rem; }
+.cartao {
+  text-align: left; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--raio);
+  padding: 1rem 1.1rem; display: grid; gap: 0.35rem; align-content: start; min-width: 0;
+  transition: border-color .15s, transform .15s;
+}
+.cartao:hover { border-color: var(--azul); }
+@media (prefers-reduced-motion: no-preference) { .cartao:hover { transform: translateY(-2px); } }
+.cartao h3 { font-size: 1.15rem; font-weight: 800; }
+.cartao p { margin: 0; font-size: 0.85rem; color: var(--ink-soft); }
+.cartao .qtd { font-family: var(--font-mono); font-size: 0.8rem; color: var(--link); font-weight: 700; }
+.cartao.todas { background: var(--amarelo); border-color: var(--amarelo); color: #1a1300; grid-column: 1 / -1; }
+.cartao.todas p, .cartao.todas .qtd { color: #3d3000; }
+.cartao.todas h3 { font-size: 1.4rem; }
+.opcoes { display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; align-items: center; font-size: 0.9rem; color: var(--ink-soft); }
+.opcoes label { display: inline-flex; align-items: center; gap: 0.45rem; }
+.opcoes input[type=checkbox] { width: 1.15rem; height: 1.15rem; accent-color: var(--azul); }
+.atalhos { font-size: 0.8rem; color: var(--ink-soft); }
+kbd { font-family: var(--font-mono); font-size: 0.8em; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 0.35em; background: var(--surface); }
+
+/* Questão */
+.cabeca { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: center; justify-content: space-between; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; border-radius: 999px; padding: 0.15rem 0.7rem; background: var(--azul); color: #fff; }
+.tag.sub { background: transparent; color: var(--ink-soft); border: 1.5px solid var(--line); }
+.prog { font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem; color: var(--ink-soft); }
+.trilha { display: flex; gap: 4px; flex-wrap: wrap; }
+.trilha i { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--line); display: block; }
+.trilha i.ok { background: var(--ok); }
+.trilha i.erro { background: var(--erro); }
+.trilha i.atual { outline: 2.5px solid var(--amarelo); outline-offset: 1px; }
+.fonte { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); }
+.apoio {
+  background: var(--surface); border: 1.5px dashed var(--line); border-radius: var(--raio);
+  padding: 0.9rem 1.1rem; display: grid; gap: 0.5rem; font-size: 0.95rem;
+}
+.apoio .rot { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--ink-soft); }
+.apoio p { margin: 0; }
+.figura { overflow-x: auto; }
+.figura svg { display: block; width: 100%; max-width: 40rem; height: auto; }
+.figura figcaption { font-size: 0.75rem; color: var(--ink-soft); }
+.enunciado { font-size: 1.45rem; font-weight: 700; line-height: 1.35; margin: 0; max-width: 58rem; }
+.alts { display: grid; gap: 0.6rem; list-style: none; margin: 0; padding: 0; }
+.alt {
+  width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 0.9rem; align-items: center;
+  text-align: left; background: var(--surface); border: 2px solid var(--line); border-radius: var(--raio);
+  padding: 0.65rem 1rem; font-size: 1.12rem; line-height: 1.35; min-width: 0;
+}
+.alt:not(:disabled):hover { border-color: var(--azul); }
+.alt .bolha {
+  width: 2.3rem; height: 2.3rem; border-radius: 50%; border: 2.5px solid var(--azul);
+  display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; color: var(--link);
+  font-size: 1.05rem;
+}
+.alt .txt { min-width: 0; }
+.alt .selo { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.alt:disabled { cursor: default; }
+.alt.certa { border-color: var(--ok); background: var(--ok-bg); }
+.alt.certa .bolha { background: var(--ok); border-color: var(--ok); color: #fff; }
+.alt.certa .selo { color: var(--ok); }
+.alt.errada { border-color: var(--erro); background: var(--erro-bg); }
+.alt.errada .bolha { background: var(--erro); border-color: var(--erro); color: #fff; }
+.alt.errada .selo { color: var(--erro); }
+.alt.apagada { opacity: 0.6; }
+
+.retorno { display: grid; gap: 1rem; scroll-margin-top: 6rem; }
+.veredito {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1.2rem;
+  border-radius: var(--raio); padding: 0.9rem 1.2rem; color: #fff;
+}
+.veredito.ok { background: var(--ok); }
+.veredito.erro { background: var(--erro); }
+.veredito.neutro { background: var(--cinza); }
+:root[data-theme="dark"] .veredito.ok, :root[data-theme="dark"] .veredito.erro { color: #08131f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .veredito.ok, :root:not([data-theme="light"]) .veredito.erro { color: #08131f; } }
+.veredito h2 { font-size: 1.8rem; font-weight: 800; }
+.veredito span { font-weight: 700; font-size: 1.05rem; }
+.porque { background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--raio); padding: 1rem 1.2rem; display: grid; gap: 0.8rem; }
+.porque h3 { font-size: 1.05rem; font-weight: 800; }
+.porque p { margin: 0; }
+.certa-txt { font-size: 1.08rem; border-left: 5px solid var(--ok); padding-left: 0.9rem; }
+.erradas { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.55rem; }
+.erradas li { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; align-items: start; }
+.erradas b { font-family: var(--font-display); color: var(--erro); font-size: 1rem; min-width: 1.4rem; }
+.erradas li.marcada { background: var(--erro-bg); border-radius: 8px; padding: 0.3rem 0.5rem; }
+.dica { background: var(--dica-bg); color: var(--dica-ink); border-radius: var(--raio); padding: 0.8rem 1.1rem; display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; align-items: start; }
+.dica b { font-family: var(--font-display); font-weight: 800; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--amarelo); color: #1a1300; border-radius: 6px; padding: 0.15rem 0.5rem; white-space: nowrap; }
+.dica p { margin: 0; }
+.acoes { display: flex; flex-wrap: wrap; gap: 0.7rem; justify-content: space-between; align-items: center; }
+.btn {
+  border-radius: 12px; padding: 0.7rem 1.3rem; font-weight: 700; font-size: 1rem; border: 2px solid var(--azul);
+  background: var(--azul); color: #fff;
+}
+.btn:hover { background: var(--azul-forte); border-color: var(--azul-forte); }
+.btn.sec { background: transparent; color: var(--link); border-color: var(--line); }
+.btn.sec:hover { border-color: var(--azul); background: transparent; }
+.btn.amarelo { background: var(--amarelo); border-color: var(--amarelo); color: #1a1300; }
+
+/* Fim */
+.placar { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; align-items: baseline; }
+.placar .grande { font-family: var(--font-display); font-weight: 800; font-size: 4.5rem; line-height: 1; color: var(--link); }
+.placar .grande small { font-size: 0.45em; color: var(--ink-soft); }
+.lista-fim { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.lista-fim li { display: grid; grid-template-columns: 2rem 1fr auto; gap: 0.7rem; align-items: center; background: var(--surface); border: 1.5px solid var(--line); border-radius: 10px; padding: 0.45rem 0.8rem; font-size: 0.92rem; }
+.lista-fim .st { font-weight: 800; font-family: var(--font-display); text-align: center; }
+.lista-fim .st.ok { color: var(--ok); } .lista-fim .st.erro { color: var(--erro); } .lista-fim .st.pulo { color: var(--ink-soft); }
+.lista-fim .lt { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-soft); white-space: nowrap; }
+.rodape { text-align: center; font-size: 0.75rem; color: var(--ink-soft); padding-block: 0 1.5rem; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+@media (max-width: 640px) {
+  .abre h1 { font-size: 1.8rem; }
+  .enunciado { font-size: 1.2rem; }
+  .alt { font-size: 1rem; }
+  .relogio .rot, .crono .rot { display: none; }
+  .digitos { font-size: 1.3rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="marca">
+    <b>Desafio <span>Artes</span> ENEM</b>
+    <small>Preparatório ENEM · Sesc Escola MT</small>
+  </div>
+
+  <div class="painel relogio" aria-label="Horário atual">
+    <div><div class="rot">Agora</div><div class="digitos" id="relogio">--:--:--</div></div>
+  </div>
+
+  <div class="painel crono" id="crono" data-estado="normal">
+    <div><div class="rot" id="crono-rot">Cronômetro</div><div class="digitos" id="crono-dig" aria-live="off">03:00</div></div>
+    <button class="btn-ic" id="crono-play" type="button" aria-label="Iniciar cronômetro" title="Iniciar ou pausar (T)"></button>
+    <button class="btn-ic" id="crono-reset" type="button" aria-label="Reiniciar cronômetro" title="Reiniciar (R)">
+      <svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>
+    </button>
+    <div class="ajuste">
+      <button class="btn-ic" id="crono-cfg" type="button" aria-expanded="false" aria-controls="crono-pop" title="Configurar tempo">Tempo</button>
+      <div class="pop" id="crono-pop" hidden>
+        <div>
+          <label for="crono-min">Tempo por questão (minutos)</label>
+          <div class="linha">
+            <input type="number" id="crono-min" min="0.5" max="60" step="0.5" value="3">
+            <button class="btn sec" type="button" id="crono-aplicar" style="padding:0.35rem 0.8rem;font-size:0.85rem">Aplicar</button>
+          </div>
+        </div>
+        <div class="linha" role="group" aria-label="Tempos prontos">
+          <button class="chip" type="button" data-min="1">1 min</button>
+          <button class="chip" type="button" data-min="2">2 min</button>
+          <button class="chip" type="button" data-min="3">3 min</button>
+          <button class="chip" type="button" data-min="5">5 min</button>
+        </div>
+        <label style="font-weight:400;display:flex;gap:0.45rem;align-items:center"><input type="checkbox" id="crono-som" checked style="width:1.05rem;height:1.05rem;accent-color:var(--azul)"> Tocar aviso sonoro no fim</label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-ic" id="tema" type="button" title="Alternar tema claro/escuro">Tema</button>
+  <button class="btn-ic" id="tela" type="button" title="Tela cheia (F)">
+    <svg viewBox="0 0 24 24"><path d="M4 9V4h5v2H6v3H4zm10-5h6v5h-2V6h-4V4zM6 15v3h3v2H4v-5h2zm12 3v-3h2v5h-6v-2h4z"/></svg>
+  </button>
+  <div class="aviso-tempo" id="aviso-tempo" role="status" hidden>Tempo esgotado! Respondam quando estiverem prontos.</div>
+</header>
+
+<main>
+  <div class="palco" id="palco"></div>
+</main>
+<p class="rodape">Questões oficiais do ENEM (INEP), 2013–2025. Textos e imagens de apoio resumidos; use o link de cada questão para ver o original. Justificativas elaboradas para fins didáticos.</p>
+
+<script>
+const CATEGORIAS = [
+  { id: "visuais", nome: "Artes visuais", desc: "Pintura, escultura, vanguardas e arte contemporânea" },
+  { id: "musica", nome: "Música", desc: "Samba, funk, manguebeat, rap e instrumentos" },
+  { id: "cenicas", nome: "Teatro, dança e performance", desc: "Jogos teatrais, balé, dança contemporânea e corpo" },
+  { id: "audiovisual", nome: "Cinema, fotografia, design e arte digital", desc: "Cinema Novo, fotografia, design e tecnologia" },
+  { id: "patrimonio", nome: "Patrimônio, arte indígena, afro-brasileira e popular", desc: "Marabaixo, arte plumária, bancos indígenas e entalhe" },
+  { id: "outras", nome: "Arte em outras matérias", desc: "Matemática, Física, História, Sociologia, Literatura e mais" }
+];
+
+const QUESTOES = [
+  // ---------- ARTES VISUAIS ----------
+  {
+    n: 1, cat: "visuais", fonte: "ENEM 2019 · 1º dia · questão 31", tema: "Escultura",
+    apoio: "Imagem de *Cabeça de touro* (1945), de Pablo Picasso: uma escultura montada com o selim e o guidão de uma bicicleta.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2019/dia-1-questao-31",
+    enunciado: "Na obra *Cabeça de touro*, o material descartado torna-se objeto de arte por meio da",
+    alts: [
+      "reciclagem da matéria-prima original.",
+      "complexidade da combinação de formas abstratas.",
+      "perenidade dos elementos que constituem a escultura.",
+      "mudança da funcionalidade pela integração dos objetos.",
+      "fragmentação da imagem no uso de elementos diversificados."
+    ],
+    certa: "D",
+    fb: {
+      A: "Não houve reciclagem: o selim e o guidão não viraram nova matéria-prima. Continuam reconhecíveis como peças de bicicleta.",
+      B: "As formas não são abstratas. O resultado é figurativo: qualquer pessoa reconhece uma cabeça de touro.",
+      C: "A durabilidade das peças não é o que transforma o descarte em arte. A questão pergunta pelo mecanismo da transformação.",
+      D: "O selim e o guidão perdem a função de bicicleta e, juntos, ganham outra: representar um touro. É a mudança de função que transforma o objeto descartado em arte.",
+      E: "Não há fragmentação, como no Cubismo. Há o contrário: a junção de duas peças inteiras."
+    },
+    dica: "\"Torna-se objeto de arte por meio da\" pede o mecanismo. Em obras com objetos do cotidiano, procure a ideia de ressignificação ou de mudança de função."
+  },
+  {
+    n: 2, cat: "visuais", fonte: "ENEM 2019 · 1º dia · questão 36", tema: "Arte contemporânea e releitura",
+    apoio: "Obra de Vik Muniz feita com calda de chocolate, que refaz a fotografia de Hans Namuth em que Jackson Pollock aparece pintando.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2019/dia-1-questao-36",
+    enunciado: "Utilizando chocolate derretido como matéria-prima, essa obra de Vik Muniz reproduz a célebre fotografia do processo de criação de Jackson Pollock. A originalidade dessa releitura reside na",
+    alts: [
+      "apropriação parodística das técnicas e materiais utilizados.",
+      "reflexão acerca dos sistemas de circulação da arte.",
+      "simplificação dos traços da composição pictórica.",
+      "contraposição de linguagens artísticas distintas.",
+      "crítica do advento do abstracionismo."
+    ],
+    certa: "A",
+    fb: {
+      A: "Pollock pintava deixando a tinta escorrer sobre a tela. Vik Muniz imita esse gesto com bom humor, trocando a tinta por chocolate, um material inesperado. Isso é uma paródia: apropriar-se de algo e recriá-lo de outro jeito.",
+      B: "A obra não discute galerias, mercado ou a forma como a arte circula.",
+      C: "Não há simplificação. A imagem é reproduzida com bastante detalhe.",
+      D: "Fotografia e pintura não são colocadas em oposição. A releitura aproxima as duas linguagens.",
+      E: "Não há crítica ao abstracionismo. Há uma homenagem bem-humorada a um pintor abstrato."
+    },
+    dica: "\"Originalidade da releitura\" + material inusitado (chocolate) = apropriação e paródia."
+  },
+  {
+    n: 3, cat: "visuais", fonte: "ENEM 2020 · 1º dia · questão 25", tema: "Arte conceitual",
+    apoio: "Imagem de *One and Three Chairs*, de Joseph Kosuth (Museu Reina Sofía, Madri).",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2020/dia-1-questao-25",
+    enunciado: "A obra de Joseph Kosuth data de 1965 e se constitui por uma fotografia de cadeira, uma cadeira exposta e um quadro com o verbete \"Cadeira\". Trata-se de um exemplo de arte conceitual que revela o paradoxo entre verdade e imitação, já que a arte",
+    alts: [
+      "não é a realidade, mas uma representação dela.",
+      "fundamenta-se na repetição, construindo variações.",
+      "não se define, pois depende da interpretação do fruidor.",
+      "resiste ao tempo, beneficiada por múltiplas formas de registro.",
+      "redesenha a verdade, aproximando-se das definições lexicais."
+    ],
+    certa: "A",
+    fb: {
+      A: "A cadeira, a foto e o verbete são três formas de representar a mesma ideia de cadeira. A obra mostra que a arte sempre representa a realidade, nunca é a própria realidade: esse é o paradoxo entre verdade e imitação.",
+      B: "A obra não trabalha com repetição ou variação. São três linguagens diferentes: objeto, imagem e palavra.",
+      C: "É uma generalização. O enunciado fala do paradoxo entre verdade e imitação, não de a arte ser indefinível.",
+      D: "A durabilidade e as formas de registro não são o tema da obra.",
+      E: "O verbete do dicionário é só mais uma representação. A obra não diz que a definição escrita é a verdade."
+    },
+    dica: "\"Paradoxo entre verdade e imitação\" aponta para a ideia de representação. Na arte conceitual, a ideia vale mais que o objeto."
+  },
+  {
+    n: 4, cat: "visuais", fonte: "ENEM 2022 · 1º dia · questão 44", tema: "Ready-made e instalação",
+    apoio: "Texto que define o ready-made de Duchamp como objeto industrial apresentado como arte para criticar o sistema artístico, e imagens de *Roda de bicicleta* e da instalação *In absentia*.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2022/dia-1-questao-44",
+    enunciado: "A instalação *In absentia* propõe um diálogo com o ready-made *Roda de bicicleta*, demonstrando que",
+    alts: [
+      "as formas de criticar obras do passado se repetem.",
+      "a recorrência de temas marca a arte do final do século XX.",
+      "as criações desmistificam os valores estéticos estabelecidos.",
+      "o distanciamento temporal permite a transformação dos referenciais estéticos.",
+      "o objeto ausente sugere a degradação da forma superando o modelo artístico."
+    ],
+    certa: "C",
+    fb: {
+      A: "Não se trata de repetir uma crítica antiga. A instalação dialoga com o ready-made e cria algo novo.",
+      B: "A recorrência de temas não é o ponto, e *Roda de bicicleta* é do início do século XX, não do final.",
+      C: "O ready-made e a instalação desmontam a ideia de que arte depende de beleza, de técnica manual ou de materiais nobres. Por isso desmistificam os valores estéticos estabelecidos.",
+      D: "Não é a distância no tempo que transforma os referenciais. É a proposta crítica das obras.",
+      E: "A ideia de \"degradação da forma\" não tem apoio no texto."
+    },
+    dica: "Ready-made aparece? Pense em crítica ao sistema da arte e aos valores estéticos tradicionais."
+  },
+  {
+    n: 5, cat: "visuais", fonte: "ENEM 2023 · 1º dia · questão 33", tema: "Pintura e Expressionismo",
+    apoio: "Imagem de *Eternos caminhantes* (1919), de Lasar Segall, e texto sobre o confisco da tela pelo regime nazista em 1937, depois de exibida nas mostras de \"arte degenerada\".",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2023/dia-1-questao-33",
+    enunciado: "Quase cinquenta obras de Lasar Segall foram confiscadas pelo regime totalitário alemão na primeira metade do século XX, entre elas a obra *Eternos caminhantes*, considerada degenerada por",
+    alts: [
+      "representar uma estética tida como inconveniente para o ideário político vigente.",
+      "manifestar um posicionamento político-cultural concebido por grupos de oposição.",
+      "expressar a cultura artística por meio da representação parcial do corpo humano.",
+      "apresentar uma composição que antecipa o imaginário artístico germânico.",
+      "estimular discussões sobre o papel da arte na construção coletiva de cultura."
+    ],
+    certa: "A",
+    fb: {
+      A: "O nazismo chamou de \"degenerada\" a arte moderna que fugia do seu ideal de arte clássica, heroica e realista. As figuras deformadas e melancólicas do Expressionismo de Segall eram esteticamente inconvenientes para esse projeto político.",
+      B: "A perseguição foi estética. Segall não fazia parte de um grupo político de oposição.",
+      C: "A representação parcial do corpo não foi o motivo do confisco.",
+      D: "A obra não antecipa um imaginário germânico. O regime a rejeitava.",
+      E: "Estimular discussões não é o motivo apontado para o confisco."
+    },
+    dica: "\"Regime totalitário\" + \"degenerada\" = estética que contraria o ideário político do regime."
+  },
+  {
+    n: 6, cat: "visuais", fonte: "ENEM 2024 · 1º dia · questão 25", tema: "Pintura e movimentos europeus",
+    apoio: "Imagem da tela *Três meninas no jardim*, de Eliseu Visconti.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-25",
+    enunciado: "Eliseu D'Angelo Visconti (1866-1944) desenvolveu diversas obras no Brasil, com grande influência das escolas europeias. Em sua pintura *Três meninas no jardim*, há",
+    alts: [
+      "culto à fluidez e ao progresso, nos moldes do ideário futurista.",
+      "valorização de formas decompostas, a exemplo do estilo cubista.",
+      "efeitos fugazes de luz e movimento, que remetem à estética impressionista.",
+      "expressão do sonho e do inconsciente, que dialoga com a proposta surrealista.",
+      "tematização de elementos cotidianos, que resgata modelos de representação da arte realista."
+    ],
+    certa: "C",
+    fb: {
+      A: "O Futurismo exalta velocidade, máquinas e cidades. Três meninas num jardim não têm nada disso.",
+      B: "O Cubismo decompõe as figuras em formas geométricas. A tela de Visconti não faz isso.",
+      C: "Pinceladas soltas, luz do sol filtrada pelo jardim e a sensação de um instante passageiro: são marcas do Impressionismo. Visconti costuma ser apontado como um dos primeiros impressionistas do Brasil.",
+      D: "O Surrealismo representa o sonho e o inconsciente. A cena é cotidiana e possível.",
+      E: "O tema é cotidiano, mas o Realismo usa contornos nítidos e crítica social. O que define a tela é o tratamento da luz."
+    },
+    dica: "Cena ao ar livre, luz e pinceladas soltas: Impressionismo. Quando duas alternativas parecem certas, veja qual descreve a técnica, e não só o tema."
+  },
+  {
+    n: 7, cat: "visuais", fonte: "ENEM 2025 · 1º dia · questão 23", tema: "Pintura contemporânea brasileira",
+    apoio: "Texto da Pinacoteca sobre a exposição de Adriana Varejão, cujos trabalhos usam cortes, rachaduras e fissuras desde 1992, e imagem de *Azulejaria em carne viva*: uma parede de azulejos portugueses rasgada, que revela algo parecido com carne.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2025/dia-1-questao-23",
+    enunciado: "A utilização de recursos visuais como suturas, cortes e ruínas por Adriana Varejão, na obra *Azulejaria em carne viva*, remete à(s)",
+    alts: [
+      "sobreposição da cultura brasileira à arte portuguesa.",
+      "manutenção da representação realista na arte brasileira.",
+      "violências desencadeadas pelo processo colonial brasileiro.",
+      "desigualdades nos incentivos à produção artística brasileira.",
+      "negligência na conservação do patrimônio arquitetônico luso-brasileiro."
+    ],
+    certa: "C",
+    fb: {
+      A: "Não há uma cultura vencendo a outra. A obra mostra uma ferida, não uma sobreposição.",
+      B: "Os cortes e a \"carne\" são recursos simbólicos, não uma representação realista.",
+      C: "O azulejo é herança portuguesa, ou seja, do colonizador. Rasgado, ele expõe uma \"carne viva\": é a metáfora do corpo ferido pela colonização.",
+      D: "Incentivos à produção artística não aparecem no texto nem na obra.",
+      E: "As rachaduras são intencionais. A obra não fala de falta de conservação."
+    },
+    dica: "Azulejo português + corte + carne = violência colonial. Na arte contemporânea brasileira, pergunte sempre: que história esse material carrega?"
+  },
+
+  // ---------- MÚSICA ----------
+  {
+    n: 8, cat: "musica", fonte: "ENEM 2019 · 1º dia · questão 25", tema: "Samba-enredo e baião",
+    apoio: "Notícia sobre o desfile de 2012 da Unidos da Tijuca, que homenageou Luiz Gonzaga e levou a cultura nordestina para a Avenida.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2019/dia-1-questao-25",
+    enunciado: "A notícia relata um evento cultural que marca a",
+    alts: [
+      "primazia do samba sobre a música nordestina.",
+      "inter-relação entre dois gêneros musicais brasileiros.",
+      "valorização das origens oligárquicas da cultura nordestina.",
+      "proposta de resgate de antigos gêneros musicais brasileiros.",
+      "criatividade em compor um samba-enredo em homenagem a uma pessoa."
+    ],
+    certa: "B",
+    fb: {
+      A: "Não há superioridade de um gênero sobre o outro. O desfile é uma homenagem.",
+      B: "O samba-enredo, do Rio, encontra o baião e a cultura nordestina de Luiz Gonzaga. Dois gêneros brasileiros dialogam no mesmo evento.",
+      C: "Luiz Gonzaga representa a cultura popular do sertão, não as oligarquias.",
+      D: "O baião continua vivo. Não se trata de resgatar um gênero esquecido.",
+      E: "É verdade que houve uma homenagem, mas isso é superficial. O que marca o evento é o encontro entre dois gêneros."
+    },
+    dica: "Quando o texto junta duas tradições, o ENEM quase sempre quer \"inter-relação\", \"diálogo\" ou \"fusão\"."
+  },
+  {
+    n: 9, cat: "musica", fonte: "ENEM 2020 · 1º dia · questão 28", tema: "Funk e música de concerto",
+    apoio: "Reportagem sobre MC Fioti, que usou um trecho da *Partita em lá menor* para flauta, de Bach, no funk \"Bum bum tam tam\" (2017).",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2020/dia-1-questao-28",
+    enunciado: "A incorporação de um trecho da obra para flauta solo de Johann Sebastian Bach na música de MC Fioti demonstra a",
+    alts: [
+      "influência permanente da cultura eurocêntrica nas produções musicais brasileiras.",
+      "homenagem aos referenciais estéticos que deram origem às produções da música popular.",
+      "necessidade de divulgar a música de concerto nos meios populares nas periferias das grandes cidades.",
+      "utilização desintencional de uma música excessivamente distante da realidade cultural dos jovens brasileiros.",
+      "inter-relação de elementos culturais vindos de realidades distintas na construção de uma nova proposta musical."
+    ],
+    certa: "E",
+    fb: {
+      A: "É uma generalização. O texto mostra um uso pontual e criativo, não uma dependência da cultura europeia.",
+      B: "Bach não é a origem do funk. Não há homenagem às raízes da música popular.",
+      C: "MC Fioti não queria divulgar música de concerto. Ele usou o trecho para criar algo novo.",
+      D: "O uso foi intencional, e a música não ficou distante dos jovens: virou um enorme sucesso.",
+      E: "Música erudita alemã do século XVIII + funk da periferia brasileira = uma proposta musical nova. São realidades distintas em diálogo."
+    },
+    dica: "Erudito + popular no mesmo trabalho: procure \"inter-relação\" e desconfie de \"influência\", \"necessidade\" ou \"hierarquia\"."
+  },
+  {
+    n: 10, cat: "musica", fonte: "ENEM 2022 · 1º dia · questão 45", tema: "Manguebeat",
+    apoio: "Artigo sobre o manguebeat, movimento do Recife dos anos 1990 que juntou o maracatu e outros ritmos regionais ao rock e ao hip-hop.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2022/dia-1-questao-45",
+    enunciado: "Chico Science foi fundamental para a renovação da música pernambucana, fato que se deu pela",
+    alts: [
+      "utilização de aparelhos musicais eletrônicos em lugar dos instrumentos tradicionais.",
+      "ocupação de espaços da natureza local para a produção de eventos musicais memoráveis.",
+      "substituição de antigas práticas musicais, como o frevo, por melodias e harmonias inovadoras.",
+      "recuperação de composições tradicionais folclóricas e sua apresentação em grandes festivais.",
+      "integração de referenciais culturais de diferentes origens, criando uma nova combinação estética."
+    ],
+    certa: "E",
+    fb: {
+      A: "Os tambores do maracatu continuaram no palco. A guitarra entrou junto, não no lugar deles.",
+      B: "O manguebeat se inspira no mangue como símbolo, mas a renovação não vem de ocupar espaços da natureza.",
+      C: "Nada foi substituído. O movimento somou referências, não apagou o frevo.",
+      D: "Não foi uma recuperação folclórica pura. O tradicional foi misturado ao pop global.",
+      E: "Maracatu + rock + hip-hop: referências regionais e globais combinadas numa estética nova."
+    },
+    dica: "Manguebeat, Tropicália e Antropofagia caem pela mesma ideia: misturar o local com o estrangeiro e criar algo novo."
+  },
+  {
+    n: 11, cat: "musica", fonte: "ENEM 2023 · 1º dia · questão 38", tema: "Rap indígena",
+    apoio: "Reportagem sobre o Brô MCs, grupo de rap indígena criado em 2009, e outros artistas que unem o gênero a ritmos e pautas dos povos originários.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2023/dia-1-questao-38",
+    enunciado: "O movimento rap dos povos originários do Brasil revela o(a)",
+    alts: [
+      "fusão de manifestações artísticas urbanas contemporâneas com a cultura indígena.",
+      "contraposição das temáticas socioambientais indígenas às questões urbanas.",
+      "rejeição da indústria radiofônica às músicas indígenas.",
+      "distanciamento da realidade social indígena.",
+      "estímulo ao estudo da poesia indígena."
+    ],
+    certa: "A",
+    fb: {
+      A: "O rap nasceu nas periferias urbanas. Os grupos indígenas o unem às suas línguas, ritmos e lutas: é uma fusão.",
+      B: "Não há oposição. O rap leva as pautas indígenas para o espaço urbano.",
+      C: "O texto não fala de rejeição pelas rádios.",
+      D: "É o contrário: as letras falam diretamente da realidade indígena.",
+      E: "O estudo da poesia indígena não é o foco do texto."
+    },
+    dica: "Arte indígena contemporânea no ENEM: a resposta costuma valorizar a cultura e mostrar que ela está viva e se transforma."
+  },
+  {
+    n: 12, cat: "musica", fonte: "ENEM 2024 · 1º dia · questão 8", tema: "Instrumentos musicais",
+    apoio: "Texto sobre o cavaquinho minhoto, de Portugal, que ganhou características próprias no Brasil e deu origem ao ukulele no Havaí, levado por emigrantes da Madeira.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-8",
+    enunciado: "O conjunto dessas práticas musicais demonstra que os instrumentos mencionados no texto",
+    alts: [
+      "refletem a dependência da utilização de matéria-prima europeia.",
+      "adaptam suas características a cada cultura, assumindo nova identidade.",
+      "comprovam a hegemonia portuguesa na invenção de cordófonos dedilhados.",
+      "ilustram processos de dominação cultural, evidenciando situações de choque cultural.",
+      "mantêm nomenclatura própria para garantir a fidelidade às formas originais de confecção."
+    ],
+    certa: "B",
+    fb: {
+      A: "O texto não diz que é preciso usar madeira ou material europeu.",
+      B: "O mesmo instrumento virou cavaquinho brasileiro e ukulele havaiano. Em cada lugar ganhou forma, som e nome próprios.",
+      C: "O texto mostra trocas culturais, não superioridade portuguesa.",
+      D: "Não há dominação nem choque. Há adaptação.",
+      E: "Os nomes mudaram, como mostra o ukulele. A alternativa contradiz o texto."
+    },
+    dica: "Viagem de uma prática cultural entre povos = adaptação e nova identidade, não dominação."
+  },
+
+  // ---------- TEATRO, DANÇA E PERFORMANCE ----------
+  {
+    n: 13, cat: "cenicas", fonte: "ENEM 2016 (reaplicação) · 2º dia · questão 134", tema: "Teatro na escola",
+    apoio: "Trecho de Ingrid Koudela (*Jogos teatrais*, 1984) que descreve o jogo teatral como aprendizagem não verbal, feita pela experimentação direta e pela solução de problemas.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2016-reaplicacao/dia-2-questao-134",
+    enunciado: "Sob orientação do professor, os jogos teatrais são realizados na escola de forma que o estudante",
+    alts: [
+      "seja um bom repetidor de movimentos e ações, pois a cópia e a memória colaboram com seu processo de desenvolvimento.",
+      "obedeça a regras sem se posicionar criticamente e sem desenvolver material criativo, fortalecendo a disciplina.",
+      "tenha um momento de recreação por meio da convivência com os colegas, melhorando seu rendimento escolar.",
+      "desenvolva qualidades de ordem cognitiva e sensorial, favorecendo sua autonomia e seu autoconhecimento.",
+      "reconheça o professor como principal responsável pelas escolhas a serem feitas em aula durante atividades de teatro."
+    ],
+    certa: "D",
+    fb: {
+      A: "Koudela fala em experimentação, não em cópia e memorização.",
+      B: "Resolver problemas exige posicionamento e criação. É o oposto de obedecer sem pensar.",
+      C: "Reduz o teatro a recreio. O texto fala de aprendizagem.",
+      D: "Experimentar, reunir os próprios dados e resolver problemas desenvolve o pensamento e os sentidos, e dá autonomia ao aluno.",
+      E: "O texto diz que o aluno \"reúne os seus próprios dados\". O protagonista é ele, não o professor."
+    },
+    dica: "Questões de teatro na escola valorizam autonomia, criação e experiência. Elimine as que falam em cópia, obediência ou recreação."
+  },
+  {
+    n: 14, cat: "cenicas", fonte: "ENEM 2018", tema: "Espetáculo que mistura linguagens",
+    apoio: "Texto sobre o grupo O Teatro Mágico, cujos shows reúnem música, circo, teatro e poesia, com referências do rock, do pop e da música folclórica brasileira.",
+    link: "https://www.todamateria.com.br/exercicios-de-artes-enem/",
+    enunciado: "A originalidade dos seus shows tem relação com a ópera europeia do século XIX a partir da",
+    alts: [
+      "disposição cênica dos artistas no espaço teatral.",
+      "integração de diversas linguagens artísticas.",
+      "sobreposição entre música e texto literário.",
+      "manutenção de um diálogo com o público.",
+      "adoção de um enredo como fio condutor."
+    ],
+    certa: "B",
+    fb: {
+      A: "A posição dos artistas no palco não é o que liga o grupo à ópera.",
+      B: "A ópera do século XIX juntava música, canto, teatro, cenário e figurino numa só obra. O Teatro Mágico faz o mesmo ao reunir música, circo, teatro e poesia.",
+      C: "Música com texto existe em qualquer canção. Não é o que torna o grupo original.",
+      D: "Conversar com a plateia não é uma característica da ópera.",
+      E: "O show do grupo não é organizado por um enredo."
+    },
+    dica: "Ópera, Teatro Mágico e Tropicália têm em comum a integração de linguagens."
+  },
+  {
+    n: 15, cat: "cenicas", fonte: "ENEM 2015", tema: "Performance",
+    apoio: "Texto sobre *A artista está presente* (MoMA, 2010), em que Marina Abramović passou 736 horas sentada, trocando olhares em silêncio com os visitantes, um de cada vez.",
+    link: "https://www.todamateria.com.br/exercicios-de-artes-enem/",
+    enunciado: "O texto apresenta uma obra da artista Marina Abramović, cuja performance se alinha a tendências contemporâneas e se caracteriza pela",
+    alts: [
+      "inovação de uma proposta de arte relacional que adentra um museu.",
+      "abordagem educacional estabelecida na relação da artista com o público.",
+      "redistribuição do espaço do museu, que integra diversas linguagens artísticas.",
+      "negociação colaborativa de sentidos entre a artista e a pessoa com quem interage.",
+      "aproximação entre artista e público, o que rompe com a elitização dessa forma de arte."
+    ],
+    certa: "D",
+    fb: {
+      A: "Arte relacional em museu não era novidade em 2010. O que caracteriza a obra é a troca com cada visitante.",
+      B: "Não há proposta educativa na performance.",
+      C: "O espaço do museu não foi reorganizado, e a obra usa só o corpo e o olhar.",
+      D: "Cada visitante que se senta constrói com a artista o sentido daquele encontro silencioso. O significado nasce entre os dois.",
+      E: "A obra aproxima artista e público, mas não rompe a elitização: aconteceu num grande museu de Nova York."
+    },
+    dica: "Na performance, o sentido costuma nascer da relação com o público. Procure \"interação\", \"negociação\", \"participação\"."
+  },
+  {
+    n: 16, cat: "cenicas", fonte: "ENEM 2021 · 1º dia · questão 23", tema: "Balé e dança de rua",
+    apoio: "Texto sobre o solo *A morte do cisne* (1905), coreografia de Mikhail Fokine com música de Saint-Saëns, e a versão de 2012 do paulistano John Lennon da Silva, dançada em street dance (popping), com roupa do dia a dia.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2021/dia-1-questao-23",
+    enunciado: "A forma original de John Lennon da Silva reinterpretar a coreografia de *A morte do cisne* demonstra que",
+    alts: [
+      "a composição da coreografia foi influenciada pela escolha do figurino.",
+      "a criação artística é beneficiada pelo encontro de modelos oriundos de diferentes realidades socioculturais.",
+      "a variação entre os modos de dançar uma mesma música evidencia a hierarquia que marca manifestações artísticas.",
+      "a formação erudita, à qual o dançarino não teve acesso, resulta em artistas que só conhecem a estética da arte popular.",
+      "a interpretação, por homens, de coreografias originalmente concebidas para mulheres exige uma adaptação complexa."
+    ],
+    certa: "B",
+    fb: {
+      A: "O figurino não é o que define a releitura. O que a define é a linguagem de movimento.",
+      B: "Balé clássico europeu + street dance da periferia paulistana. O encontro de mundos diferentes produziu uma criação nova.",
+      C: "A releitura desfaz a hierarquia entre erudito e popular. Não a reforça.",
+      D: "É preconceituosa: supõe que quem não estudou balé só conhece arte popular. O próprio dançarino prova o contrário.",
+      E: "O texto não discute o gênero do intérprete."
+    },
+    dica: "Alternativas que hierarquizam culturas (\"só conhece\", \"superior\", \"hierarquia\") quase nunca estão certas no ENEM."
+  },
+  {
+    n: 17, cat: "cenicas", fonte: "ENEM 2023 · 1º dia · questão 34", tema: "Dança contemporânea",
+    apoio: "Descrição e foto do espetáculo *Gira*, em que bailarinos de saias brancas evocam o transe dos cultos afro-brasileiros sem imitar o ritual.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2023/dia-1-questao-34",
+    enunciado: "No diálogo que estabelece com religiões afro-brasileiras, sintetizado na descrição e na imagem do espetáculo, a dança exprime uma",
+    alts: [
+      "crítica aos movimentos padronizados do balé clássico.",
+      "representação contemporânea de rituais ancestrais extintos.",
+      "reelaboração estética erudita de práticas religiosas populares.",
+      "releitura irônica da atmosfera mística presente no culto a entidades.",
+      "oposição entre o resgate de tradições e a efemeridade da vida humana."
+    ],
+    certa: "C",
+    fb: {
+      A: "O espetáculo não critica o balé clássico.",
+      B: "Os cultos afro-brasileiros não estão extintos. Candomblé e umbanda são praticados hoje.",
+      C: "Uma companhia de dança cênica se inspira no gesto e no transe das religiões populares e os recria como arte de palco, sem copiar o ritual.",
+      D: "Não há ironia. O diálogo com a religião é respeitoso.",
+      E: "O texto não opõe tradição e efemeridade."
+    },
+    dica: "\"Engana-se quem pensa que vai assistir a uma representação\" = não é imitação, é reelaboração."
+  },
+  {
+    n: 18, cat: "cenicas", fonte: "ENEM 2021 · 1º dia · questão 20", tema: "Dança e tecnologia",
+    apoio: "Texto sobre *Mini@tures*, do coreógrafo Didier Mulleras, projeto de dança feito para a internet que mistura corpo, computação gráfica e rede.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2021/dia-1-questao-20",
+    enunciado: "Considerado o primeiro projeto de dança contemporânea concebido para a rede, esse trabalho é apresentado como inovador por",
+    alts: [
+      "adotar uma perspectiva conceitual como contraposição à tradição de grandes espetáculos.",
+      "criar novas formas de financiamento ao utilizar a internet para divulgação das apresentações.",
+      "privilegiar movimentos gerados por computação gráfica, com a substituição do palco pela tela.",
+      "produzir uma arte multimodal, com o intuito de ampliar as possibilidades de expressão estética.",
+      "redefinir a extensão e o propósito do espetáculo para adaptá-lo ao perfil de diferentes usuários."
+    ],
+    certa: "D",
+    fb: {
+      A: "O texto não opõe o projeto aos grandes espetáculos.",
+      B: "Financiamento não é mencionado.",
+      C: "O corpo não é substituído pela computação. O texto fala de \"contaminação\" entre corpo e computação gráfica, ou seja, de mistura.",
+      D: "Corpo, dança, computação gráfica e internet juntos: é uma arte multimodal, que soma linguagens para ampliar a expressão.",
+      E: "Não há adaptação a perfis de usuários."
+    },
+    dica: "\"Contaminação entre mídias\" = arte multimodal, que soma linguagens."
+  },
+
+  // ---------- AUDIOVISUAL ----------
+  {
+    n: 19, cat: "audiovisual", fonte: "ENEM Digital 2020 · questão 17", tema: "Cinema",
+    apoio: "A letra de \"Cinema Novo\", de Caetano Veloso e Gilberto Gil (*Tropicália 2*, 1993), que celebra o movimento, e um trecho de Glauber Rocha (*Revolução do Cinema Novo*, 1981) defendendo um cinema que enfrente a realidade brasileira.",
+    link: "https://plataformaassaad.com.br/questao-17-caderno-azul-do-enem-2020-digital/",
+    enunciado: "Uma das aspirações do Cinema Novo, movimento cinematográfico brasileiro dos anos 1960, incorporadas pela letra da canção e detectáveis no texto de Glauber Rocha, está na",
+    alts: [
+      "retomada das aspirações antropofágicas pela prática intertextual.",
+      "problematização do conceito de arte provocada pela geração tropicalista.",
+      "materialização do passado como instrumento de percepção do contemporâneo.",
+      "síntese da cultura popular em sintonia com as manifestações artísticas da época.",
+      "formulação de uma identidade brasileira calcada na tradição cultural e na crítica social."
+    ],
+    certa: "E",
+    fb: {
+      A: "Antropofagia e intertextualidade são marcas da Tropicália, não as aspirações do Cinema Novo.",
+      B: "Problematizar o conceito de arte é tropicalista. A pergunta é sobre o Cinema Novo.",
+      C: "O movimento olhava para o Brasil do presente, não para o passado.",
+      D: "É vaga e deixa de fora a crítica social, que é o centro do texto de Glauber.",
+      E: "Glauber queria um cinema que enfrentasse a realidade e a consciência do subdesenvolvimento. A canção celebra a identidade brasileira. As duas coisas juntas: tradição cultural + crítica social."
+    },
+    dica: "Cinema Novo = \"uma câmera na mão e uma ideia na cabeça\": identidade nacional e crítica social."
+  },
+  {
+    n: 20, cat: "audiovisual", fonte: "ENEM 2024 · 1º dia · questão 43", tema: "Fotografia",
+    apoio: "Texto sobre Regina Valkenborgh, que montou uma câmera pinhole com uma lata e a esqueceu por oito anos presa a um telescópio; a imagem registrou 2 953 arcos do Sol no céu.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-43",
+    enunciado: "O experimento realizado por Regina Valkenborgh resultou no entendimento de que a",
+    alts: [
+      "técnica fotográfica alternativa limita o registro de imagens.",
+      "apreciação da natureza depende de registro fotográfico.",
+      "criatividade artística decorre do conhecimento científico.",
+      "câmera de criação caseira tem valor tecnológico.",
+      "produção artística pode ser resultado do acaso."
+    ],
+    certa: "E",
+    fb: {
+      A: "A técnica caseira registrou algo extraordinário. Ela ampliou o registro, não o limitou.",
+      B: "O texto não diz que só se aprecia a natureza por meio de fotos.",
+      C: "A imagem não nasceu de um plano científico. Nasceu de um esquecimento.",
+      D: "O valor tecnológico da lata não é o ponto do texto.",
+      E: "A câmera foi esquecida por oito anos e, por acaso, produziu uma imagem única. O acaso também pode criar arte."
+    },
+    dica: "Leia o fato central do texto: \"esquecida por oito anos\". É ele que leva à resposta."
+  },
+  {
+    n: 21, cat: "audiovisual", fonte: "ENEM 2018 · 1º dia · questão 11", tema: "Fotografia e body art",
+    apoio: "A fotografia em preto e branco *Dentro de mim* (2000), da artista portuguesa Helena Almeida, e um texto que define a body art.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2018/dia-1-questao-11",
+    enunciado: "Nos textos, a concepção de body art está relacionada à intenção de",
+    alts: [
+      "estabelecer limites entre o corpo e a composição.",
+      "fazer do corpo um suporte privilegiado de expressão.",
+      "discutir políticas e ideologias sobre o corpo como arte.",
+      "compreender a autonomia do corpo no contexto da obra.",
+      "destacar o corpo do artista em contato com o expectador."
+    ],
+    certa: "B",
+    fb: {
+      A: "A body art mistura corpo e obra. Não separa os dois.",
+      B: "Na body art, o corpo do artista é a própria tela, o próprio material da obra.",
+      C: "Os textos não falam de debate político ou ideológico.",
+      D: "\"Autonomia do corpo\" é vago e não aparece nos textos.",
+      E: "Na fotografia não há contato com o espectador."
+    },
+    dica: "Body art = o corpo como suporte. Mesmo raciocínio da performance."
+  },
+  {
+    n: 22, cat: "audiovisual", fonte: "ENEM 2018", tema: "Arte e tecnologia",
+    apoio: "Texto e imagem sobre Stephen Lund, que pedala pela cidade com o GPS ligado para que o trajeto registrado forme desenhos no mapa; já percorreu mais de 10 mil quilômetros assim.",
+    link: "https://www.todamateria.com.br/exercicios-de-artes-enem/",
+    enunciado: "Os textos destacam a inovação artística proposta por Stephen Lund a partir do(a)",
+    alts: [
+      "deslocamento das tecnologias de suas funções habituais.",
+      "perspectiva de funcionamento do dispositivo de GPS.",
+      "ato de guiar sua bicicleta pelas ruas da cidade.",
+      "análise dos problemas de mobilidade urbana.",
+      "foco na promoção cultural da sua cidade."
+    ],
+    certa: "A",
+    fb: {
+      A: "O GPS foi feito para localizar e guiar. Lund o usa como lápis para desenhar no mapa: a tecnologia sai da função habitual.",
+      B: "O funcionamento técnico do GPS não é a inovação.",
+      C: "Pedalar é o meio, não a inovação.",
+      D: "Mobilidade urbana não é discutida.",
+      E: "Promover a cidade não é o objetivo do artista."
+    },
+    dica: "É o mesmo raciocínio do ready-made: algo comum ganha outra função e vira arte."
+  },
+  {
+    n: 23, cat: "audiovisual", fonte: "ENEM 2021 · 1º dia · questão 27", tema: "Design e arquitetura",
+    apoio: "Reportagem de Débora Chaves sobre os 50 anos de Brasília, cuja estética levou os designers de móveis a trocar o estilo colonial rebuscado por linhas retas e curvas suaves, com fotos de cadeiras e poltronas de Sérgio Rodrigues.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2021/dia-1-questao-27",
+    enunciado: "Na reportagem sobre os 50 anos de Brasília, de Débora Chaves, com a reprodução fotográfica de cadeiras e poltronas de Sérgio Rodrigues, verifica-se que os elementos da estética brasiliense",
+    alts: [
+      "aparecem definidos nas linhas retas dos objetos.",
+      "expressam desenho rebuscado por meio das linhas.",
+      "mostram a expressão assimétrica das linhas curvas suaves.",
+      "apontam unidade de matéria-prima utilizada em sua fabricação.",
+      "surgem na simplificação das informações visuais de cada composição."
+    ],
+    certa: "E",
+    fb: {
+      A: "Incompleta: o texto fala em linhas retas e em curvas suaves.",
+      B: "O texto diz o contrário: os designers abandonaram o desenho rebuscado.",
+      C: "Curvas suaves não querem dizer assimetria.",
+      D: "O texto cita madeiras nobres e palhinha: mais de uma matéria-prima.",
+      E: "Trocar o rebuscado por linhas limpas é simplificar a informação visual, marca da arquitetura modernista de Brasília."
+    },
+    dica: "Quando uma alternativa pega só metade do texto (\"linhas retas\"), procure a que resume o todo (\"simplificação\")."
+  },
+  {
+    n: 24, cat: "audiovisual", fonte: "ENEM 2023 · 1º dia · questão 37", tema: "Colagem e redes sociais",
+    apoio: "Reportagem sobre o artista goiano Wolney Fernandes, que divulga suas colagens nas redes sociais e já teve trabalhos em capas de livros no Brasil e no exterior.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2023/dia-1-questao-37",
+    enunciado: "O artista goiano Wolney Fernandes busca expor seu trabalho por meio de plataformas virtuais com o objetivo de",
+    alts: [
+      "dar suporte à técnica de colagem em Artes Visuais, contornando dificuldades práticas.",
+      "aproximar-se da estética visual própria da editoração de obras artísticas, como capas de livros.",
+      "oferecer uma vitrine internacional para sua produção artística, a fim de dar mais visibilidade a suas obras.",
+      "enfatizar o caráter original e inovador de suas criações artísticas, diferenciando-se das artes tradicionais.",
+      "trazer um sentido tecnológico às suas colagens, uma vez que as imagens artísticas são recorrentes nas redes sociais."
+    ],
+    certa: "C",
+    fb: {
+      A: "As redes não são apoio técnico para fazer colagens.",
+      B: "As capas de livro foram consequência da divulgação, não o objetivo.",
+      C: "As redes ampliaram o alcance das obras, que chegaram a capas de livros no exterior. É uma vitrine internacional.",
+      D: "Diferenciar-se da arte tradicional não está no texto.",
+      E: "Ele não busca um sentido tecnológico para a colagem."
+    },
+    dica: "A pergunta é \"com o objetivo de\". Separe objetivo (visibilidade) de consequência (capas de livros)."
+  },
+
+  // ---------- PATRIMÔNIO ----------
+  {
+    n: 25, cat: "patrimonio", fonte: "ENEM 2023 · 1º dia · questão 36", tema: "Patrimônio imaterial",
+    apoio: "Texto do IPHAN sobre o Marabaixo, do Amapá, que nasceu de cantos fúnebres pelos escravizados mortos nos navios negreiros e se tornou um ciclo de danças, cantorias e festas; é Patrimônio Cultural do Brasil desde 2018.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2023/dia-1-questao-36",
+    enunciado: "A manifestação do Marabaixo se constituiu em expressão de arte e cultura, exercendo função de",
+    alts: [
+      "ressignificar episódios dramáticos em novas práticas culturais.",
+      "adaptar coreografias como imitação dos movimentos do mar.",
+      "lembrar dos mortos no passado escravista como forma de lamento.",
+      "perpetuar uma narrativa de apagamento dos fatos históricos traumáticos.",
+      "ritualizar a passagem de atos fúnebres nas produções coletivas com espírito festivo."
+    ],
+    certa: "A",
+    fb: {
+      A: "A dor do tráfico negreiro, cantada em lamentos, virou dança, canto e festa. Um episódio trágico ganhou novo sentido numa prática cultural viva.",
+      B: "Imitar o movimento do mar não aparece no texto.",
+      C: "Era assim na origem, mas o texto mostra que a manifestação se transformou. O lamento não é mais sua função.",
+      D: "É o oposto: o Marabaixo preserva a memória, não a apaga.",
+      E: "Mistura as duas fases. O Marabaixo não é um rito fúnebre feito com alegria: é uma prática nova que nasceu do luto."
+    },
+    dica: "\"Se constituiu\" indica transformação ao longo do tempo. Procure a alternativa que fala de mudança de sentido."
+  },
+  {
+    n: 26, cat: "patrimonio", fonte: "ENEM 2024 · 1º dia · questão 16", tema: "Arte afro-brasileira",
+    apoio: "Texto que define a arte afro-brasileira como a produção plástica feita por negros, mestiços ou brancos a partir de suas experiências com a cultura negra nacional, citando Carybé, Mestre Didi e Djanira.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-16",
+    enunciado: "Sob a perspectiva da multiculturalidade e de acordo com o texto, a produção artística afro-brasileira caracteriza-se pelo(a)",
+    alts: [
+      "estranhamento no modo de apropriação da cultura religiosa de matriz africana.",
+      "distanciamento entre as raízes de matriz africana e a estética de outras culturas.",
+      "visão uniformizadora das religiões de matriz africana expressada nas diferentes produções.",
+      "relação complexa entre as vivências pessoais dos artistas e os referenciais estéticos de matriz africana.",
+      "padronização da forma de produção e da temática da matriz africana presente nas obras dos artistas citados."
+    ],
+    certa: "D",
+    fb: {
+      A: "O texto não fala de estranhamento.",
+      B: "Não há distanciamento. Há diálogo entre a matriz africana e outras culturas.",
+      C: "Os artistas citados são muito diferentes entre si. Não há visão uniforme.",
+      D: "O texto define essa arte pela experiência de cada artista com a cultura negra. Vivência pessoal + referências africanas = relação complexa.",
+      E: "É o mesmo erro da C: nada de padronização."
+    },
+    dica: "\"Multiculturalidade\" pede diversidade. Elimine as alternativas com \"uniformizadora\" e \"padronização\"."
+  },
+  {
+    n: 27, cat: "patrimonio", fonte: "ENEM 2025 · 1º dia · questão 15", tema: "Retrato e identidade",
+    apoio: "Texto crítico sobre como o retrato ocidental deixou negros e indígenas sem rosto e sem nome na arte brasileira, e sobre os retratos do pintor Dalton Paula, que dão nome e destaque a figuras como Zeferina e João de Deus Nascimento.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2025/dia-1-questao-15",
+    enunciado: "Ao dar protagonismo a Zeferina e a João de Deus Nascimento, o artista Dalton Paula evidencia que a(s)",
+    alts: [
+      "arte pode promover formas de afirmação de identidade social.",
+      "comunidades periféricas passam a adquirir o gênero retrato.",
+      "personagens retratadas simbolizam a sociedade brasileira.",
+      "pintura funciona como instrumento de ascensão social.",
+      "imagens tradicionais preservam memórias afetivas."
+    ],
+    certa: "A",
+    fb: {
+      A: "Pintar com nome e destaque pessoas negras que a história apagou é afirmar a identidade de um grupo social. A arte devolve o rosto a quem foi esquecido.",
+      B: "Comprar retratos não tem relação com a obra.",
+      C: "São pessoas específicas, apagadas da história. Não simbolizam toda a sociedade brasileira.",
+      D: "Ascensão social não é o tema.",
+      E: "A obra questiona as imagens tradicionais, que excluíam essas pessoas. Ela cria imagens novas."
+    },
+    dica: "Arte que dá visibilidade a grupos apagados = afirmação de identidade."
+  },
+  {
+    n: 28, cat: "patrimonio", fonte: "ENEM 2024 · 1º dia · questão 21", tema: "Arte plumária indígena",
+    apoio: "Texto da *Mostra do redescobrimento: artes indígenas* (2000) explicando que os adornos informam o prestígio e o papel social de quem os usa, são restritos à linhagem e expressam a visão de mundo do grupo; acompanha a imagem de um adorno.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-21",
+    enunciado: "Pela leitura desses textos, infere-se que a compreensão da arte plumária indígena requer a consideração da",
+    alts: [
+      "indistinção hierárquica entre os membros de um mesmo grupo social.",
+      "prevalência dos elementos do mundo natural sobre as relações humanas.",
+      "reconfiguração constante das representações coletivas acerca do universo.",
+      "indeterminação entre as noções de identidade individual e de identidade cultural.",
+      "indissociabilidade entre objetos ritualísticos e os papéis dos indivíduos na comunidade."
+    ],
+    certa: "E",
+    fb: {
+      A: "O texto diz o contrário: os adornos marcam prestígio, ou seja, diferenças de posição.",
+      B: "A natureza não se sobrepõe às relações sociais. O adorno fala justamente delas.",
+      C: "\"Reconfiguração constante\" não tem apoio no texto.",
+      D: "O adorno liga cada pessoa à sua linhagem. Não há indeterminação.",
+      E: "Cada adorno indica o papel de quem o usa e carrega a visão de mundo do povo. Objeto e função social não se separam."
+    },
+    dica: "Na arte indígena, arte e vida social andam juntas. Procure a alternativa que liga o objeto à função na comunidade."
+  },
+  {
+    n: 29, cat: "patrimonio", fonte: "ENEM 2025 · 1º dia · questão 41", tema: "Escultura indígena",
+    apoio: "Texto de *Bancos indígenas do Brasil* (2013) sobre os bancos sagrados dos povos Tukano, feitos desde tempos imemoriais a partir de um mito de criação, e a imagem do banco de madeira *Tatu Kamayurá*.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2025/dia-1-questao-41",
+    enunciado: "Os textos I e II demonstram, na confecção dos bancos, uma íntima relação de sacralidade entre o ser humano e a natureza, perceptível por meio da",
+    alts: [
+      "representação realista de animais, mostrando o domínio do homem sobre a natureza.",
+      "manutenção da herança cultural, atribuindo nova função aos elementos da fauna.",
+      "anulação dos traços que permitem reconhecer o animal representado.",
+      "presença de grafismos na forma animal representada no banco.",
+      "criação de figuras fantásticas baseadas em formas animais."
+    ],
+    certa: "B",
+    fb: {
+      A: "Não há domínio do homem sobre a natureza. O texto fala de sacralidade, de respeito.",
+      B: "A tradição é mantida há gerações, e o animal, como o tatu, vira banco: ganha uma nova função sem perder o sentido sagrado.",
+      C: "O tatu continua reconhecível no banco.",
+      D: "Pode haver grafismos, mas não são eles que mostram a relação sagrada descrita nos textos.",
+      E: "O tatu é um animal real, não uma figura fantástica."
+    },
+    dica: "Volte ao enunciado: \"relação de sacralidade\". Elimine \"domínio\" e procure tradição + função."
+  },
+  {
+    n: 30, cat: "patrimonio", fonte: "ENEM 2025 · 1º dia · questão 22", tema: "Arte popular",
+    apoio: "Texto sobre a Ilha do Ferro, povoado às margens do Rio São Francisco onde dezenas de artistas populares entalham troncos e galhos e os transformam em esculturas.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2025/dia-1-questao-22",
+    enunciado: "A originalidade do trabalho dos artistas da Ilha do Ferro se dá pela",
+    alts: [
+      "reutilização de materiais para redução do impacto ambiental.",
+      "ressignificação da matéria-prima atribuindo-lhe nova função.",
+      "reprodução em madeira de modelos artísticos canônicos.",
+      "representação de práticas corporais da comunidade.",
+      "replicação seriada para distribuição em larga escala."
+    ],
+    certa: "B",
+    fb: {
+      A: "O texto não fala de impacto ambiental.",
+      B: "Troncos e galhos, que seriam só madeira, ganham forma e sentido de escultura. A matéria-prima recebe nova função.",
+      C: "Os artistas criam obras próprias. Não copiam modelos consagrados.",
+      D: "Práticas corporais não são o tema.",
+      E: "São peças únicas, feitas à mão, não produção em série."
+    },
+    dica: "\"Originalidade\" em arte popular costuma vir da criação própria e da ressignificação do material."
+  },
+
+  // ---------- OUTRAS MATÉRIAS ----------
+  {
+    n: 31, cat: "outras", disciplina: "Matemática", fonte: "ENEM 2020 · 2º dia · questão 155", tema: "Gravura e progressão geométrica",
+    apoio: "O enunciado parte das gravuras de M. C. Escher, em que as imagens se repetem em tamanhos cada vez menores, e traz o rascunho de um artista com uma sequência infinita de quadrados. O primeiro, PRST, tem lado 1; cada novo quadrado é construído sob o anterior, a partir do ponto médio da base, com lado igual à metade dessa base.",
+    link: "https://xequematenem.com.br/blog/questao-155-enem-2020/",
+    figura: "quadrados",
+    enunciado: "Qual é a medida do lado do centésimo quadrado construído de acordo com esse padrão?",
+    alts: ["(1/2)¹⁰⁰", "(1/2)⁹⁹", "(1/2)⁹⁷", "(1/2)⁻⁹⁸", "(1/2)⁻⁹⁹"],
+    certa: "B",
+    fb: {
+      A: "Erro mais comum: esquecer que o 1º quadrado tem lado (1/2)⁰ = 1. O expoente fica sempre uma unidade atrás da posição.",
+      B: "Os lados formam uma PG de razão 1/2: 1, 1/2, 1/4… O quadrado da posição n tem lado (1/2)ⁿ⁻¹. Para n = 100: (1/2)⁹⁹.",
+      C: "O expoente não corresponde a nenhuma posição da sequência.",
+      D: "Expoente negativo faria o número ficar maior que 1, mas os quadrados diminuem.",
+      E: "Mesmo erro da D: (1/2)⁻⁹⁹ = 2⁹⁹, um número enorme."
+    },
+    dica: "Monte a sequência dos primeiros termos (1, 1/2, 1/4) antes de generalizar. A arte de Escher é o pretexto; a habilidade é PG."
+  },
+  {
+    n: 32, cat: "outras", disciplina: "História", fonte: "ENEM 2017 · 1º dia · questão 90", tema: "Moda e ditadura",
+    apoio: "Duas imagens. A primeira mostra Maria Bonita, cangaceira dos anos 1930, com chapéu enfeitado e roupas de couro; a segunda, um modelo de 1969 da estilista Zuzu Angel que leva esses elementos para a alta-costura.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2017/dia-1-questao-90",
+    enunciado: "Elaborada em 1969, a releitura contida na Figura 2 revela aspectos de uma trajetória e obra dedicadas à",
+    alts: [
+      "valorização de uma representação tradicional da mulher.",
+      "descaracterização de referências do folclore nordestino.",
+      "fusão de elementos brasileiros à moda da Europa.",
+      "massificação do consumo de uma arte local.",
+      "criação de uma estética de resistência."
+    ],
+    certa: "E",
+    fb: {
+      A: "Maria Bonita, cangaceira armada, rompe com a imagem tradicional da mulher.",
+      B: "Zuzu Angel valorizou as referências nordestinas. Não as descaracterizou.",
+      C: "O foco é a cultura brasileira, não a moda europeia.",
+      D: "Alta-costura não é consumo de massa.",
+      E: "Em plena ditadura (1969), Zuzu levou à passarela a cangaceira, figura rebelde. Mais tarde usou a moda para denunciar o desaparecimento do filho pelo regime. Moda como resistência."
+    },
+    dica: "Data de 1969 + Brasil = ditadura militar. Contexto é metade da resposta em História."
+  },
+  {
+    n: 33, cat: "outras", disciplina: "História", fonte: "ENEM 2017 · Ciências Humanas", tema: "Pintura histórica e República",
+    apoio: "A tela *Tiradentes esquartejado* (1893), de Pedro Américo, e um texto de Machado de Assis que trata Tiradentes como a figura principal da Inconfidência Mineira e descreve seu sacrifício com imagens de martírio e redenção.",
+    link: "https://sisq.elitecampinas.com.br/GabaritoVestibulares/VisualizarQuestaoLista?id_questao_lista=7440908&vestibular=enem&ano=2017&prova_vestibular_id=361585",
+    enunciado: "No processo de transição para a República, a narrativa machadiana sobre a Inconfidência Mineira associa",
+    alts: [
+      "redenção cristã e cultura cívica.",
+      "veneração aos santos e radicalismo militar.",
+      "apologia aos protestantes e culto ufanista.",
+      "tradição messiânica e tendência regionalista.",
+      "representação eclesiástica e dogmatismo ideológico."
+    ],
+    certa: "A",
+    fb: {
+      A: "Machado descreve o sacrifício de Tiradentes como um martírio cristão (redenção), e a República o transforma em herói da pátria (cultura cívica). A tela de Pedro Américo faz o mesmo: o corpo esquartejado lembra o de Cristo.",
+      B: "O texto não fala de radicalismo militar.",
+      C: "A imagem do martírio é católica, não protestante.",
+      D: "Tiradentes vira herói nacional, não regional.",
+      E: "Dogmatismo ideológico não tem apoio no texto."
+    },
+    dica: "Pintura histórica do fim do século XIX ajudou a construir heróis para a República. Tiradentes foi pintado como um Cristo."
+  },
+  {
+    n: 34, cat: "outras", disciplina: "Sociologia", fonte: "ENEM 2024 · 1º dia · questão 63", tema: "Indústria cultural",
+    apoio: "Texto de Fontes e Magalhães sobre a indústria cultural, conceito de Adorno e Horkheimer: ela dispensa a reflexão e dá ao público uma aparência de liberdade enquanto o trata como massa homogênea.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-63",
+    enunciado: "Ao analisar as consequências da dinâmica apresentada no texto, as autoras destacam a importância do conceito como",
+    alts: [
+      "ferramenta de luta coletiva.",
+      "mecanismo de controle social.",
+      "instituição de interesse público.",
+      "organização da iniciativa privada.",
+      "instrumento de manipulação estatal."
+    ],
+    certa: "B",
+    fb: {
+      A: "É o oposto: a indústria cultural dissolve a reflexão crítica, que seria base de uma luta coletiva.",
+      B: "Para Adorno e Horkheimer, a indústria cultural padroniza gostos e comportamentos dando uma falsa sensação de liberdade. É controle social.",
+      C: "Não é uma instituição pública.",
+      D: "Ela é feita por empresas, mas o conceito não descreve uma forma de organização privada.",
+      E: "Quem controla é o mercado cultural, não o Estado."
+    },
+    dica: "Indústria cultural = arte transformada em mercadoria padronizada que molda o público."
+  },
+  {
+    n: 35, cat: "outras", disciplina: "Literatura", fonte: "ENEM 2021 · 1º dia · questão 18", tema: "Pintura romântica e poema épico",
+    apoio: "Uma pintura do século XIX que mostra uma cena de *Caramuru*, de Santa Rita Durão: o corpo de uma indígena morta, estendido na praia.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2021/dia-1-questao-18",
+    enunciado: "Nessa obra, que retrata uma cena de *Caramuru*, célebre poema épico brasileiro, a filiação à estética romântica manifesta-se na",
+    alts: [
+      "exaltação do retrato fiel da beleza feminina.",
+      "tematização da fragilidade humana diante da morte.",
+      "ressignificação de obras do cânone literário nacional.",
+      "representação dramática e idealizada do corpo da índia.",
+      "oposição entre a condição humana e a natureza primitiva."
+    ],
+    certa: "D",
+    fb: {
+      A: "O Romantismo não faz retrato fiel. Ele idealiza.",
+      B: "A morte aparece, mas não é ela que define o Romantismo da obra.",
+      C: "É genérica: qualquer adaptação de livro faria isso.",
+      D: "Corpo belo e idealizado, cena dramática, indígena como figura heroica do Brasil: é o indianismo romântico.",
+      E: "Não há oposição entre ser humano e natureza na cena."
+    },
+    dica: "Romantismo brasileiro + indígena = idealização (indianismo)."
+  },
+  {
+    n: 36, cat: "outras", disciplina: "Literatura e argumentação", fonte: "ENEM 2024 · 1º dia · questão 30", tema: "O papel da arte",
+    apoio: "No Texto I, uma carta de 1946 em que Graciliano Ramos elogia a série *Retirantes*, de Portinari, e defende que a arte mostre a miséria em vez de criar ilusões. No Texto II, uma crônica em que Antônio Prata critica a arte feita para confirmar certezas e diz que literatura, cinema e teatro devem expor contradições.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2024/dia-1-questao-30",
+    enunciado: "No que diz respeito à arte, o posicionamento de Antônio Prata, no Texto II, aproxima-se da tese de Graciliano Ramos, no Texto I, uma vez que ambos",
+    alts: [
+      "defendem a dignidade do ofício dos artistas.",
+      "concluem que a arte reforça crenças pessoais.",
+      "apresentam a pobreza como inspiração para a arte.",
+      "afirmam o necessário caráter desestabilizador da arte.",
+      "atestam que há mudanças significativas na produção artística."
+    ],
+    certa: "D",
+    fb: {
+      A: "A dignidade do ofício não é o tema de nenhum dos dois.",
+      B: "É o contrário: os dois criticam a arte que só confirma o que já se pensa.",
+      C: "Só Graciliano fala da pobreza. A alternativa não serve para os dois textos.",
+      D: "Graciliano quer uma arte que mostre a miséria sem ilusão; Prata, uma arte que tire o público das certezas. Os dois defendem que a arte incomode.",
+      E: "Nenhum dos textos discute mudanças na produção artística."
+    },
+    dica: "Em questões que comparam dois textos, a alternativa certa vale para os dois. Teste cada uma nos dois textos."
+  },
+  {
+    n: 37, cat: "outras", disciplina: "Educação Física", fonte: "ENEM 2015", tema: "Hip hop e break",
+    apoio: "Texto sobre a cultura hip hop, formada pelo rap, pelo break e pelo grafite; o break é apresentado como dança de rua ligada ao ritmo da cidade.",
+    link: "https://www.projetoagathaedu.com.br/questoes-enem/linguagens/educacao-fisica/dancas.php",
+    enunciado: "Entre as manifestações da cultura hip hop apontadas no texto, o break se caracteriza como um tipo de dança que representa aspectos contemporâneos por meio de movimentos",
+    alts: [
+      "retilíneos, como crítica aos indivíduos alienados.",
+      "improvisados, como expressão da dinâmica da vida urbana.",
+      "suaves, como sinônimo da rotina dos espaços públicos.",
+      "ritmados pela sola dos sapatos, como símbolo de protesto.",
+      "cadenciados, como contestação às rápidas mudanças culturais."
+    ],
+    certa: "B",
+    fb: {
+      A: "Os movimentos do break não são retilíneos, e o texto não fala de alienação.",
+      B: "O break nasce na rua, com improviso, giros e quebras de ritmo que expressam a velocidade e a energia da vida urbana.",
+      C: "O break é enérgico e acrobático, não suave.",
+      D: "Movimentos marcados pela sola dos sapatos descrevem o sapateado, não o break.",
+      E: "\"Cadenciados\" e \"contestação às mudanças\" não têm apoio no texto."
+    },
+    dica: "Dança na Educação Física do ENEM: ligue o movimento ao contexto de onde a dança nasceu."
+  },
+  {
+    n: 38, cat: "outras", disciplina: "Educação Física", fonte: "ENEM 2021 · 1º dia · questão 42", tema: "Corpo e Pop Art",
+    apoio: "Uma obra da Pop Art, de 1960, que mostra o corpo feminino em situação de lazer, e um texto afirmando que cada sociedade inventa e reinventa o corpo conforme seus valores e costumes.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2021/dia-1-questao-42",
+    enunciado: "Na reprodução desses preceitos, a erotização do corpo feminino tem sido constituída pela",
+    alts: [
+      "realização de exercícios físicos sistemáticos e excessivos.",
+      "utilização de medicamentos e produtos estéticos.",
+      "educação do gesto, da vontade e do comportamento.",
+      "construção de espaços para vivência de práticas corporais.",
+      "promoção de novas experiências de movimento humano no lazer."
+    ],
+    certa: "C",
+    fb: {
+      A: "Exercícios excessivos não aparecem no texto.",
+      B: "Medicamentos e produtos estéticos não são citados.",
+      C: "Se a sociedade \"inventa o corpo\", ela ensina como gesticular, o que desejar e como se comportar. É a educação do corpo pela cultura.",
+      D: "Espaços para práticas corporais não são o tema.",
+      E: "O lazer está na imagem, mas a pergunta é sobre como a erotização do corpo é construída."
+    },
+    dica: "\"Inventa e reinventa o corpo\" = o corpo é construído socialmente, pela educação de gestos e comportamentos."
+  },
+  {
+    n: 39, cat: "outras", disciplina: "Língua Portuguesa", fonte: "ENEM 2022 · 1º dia · questão 16", tema: "Crítica de cinema",
+    apoio: "Texto da revista *Época* (2012) que comenta e avalia o documentário *Elena*, de Petra Costa, sobre a irmã mais velha da diretora.",
+    link: "https://www.memorizevestibular.com/blog/questoes/enem-2022/dia-1-questao-16",
+    enunciado: "O texto é exemplar de um gênero discursivo que cumpre a função social de",
+    alts: [
+      "narrar, por meio de imagem e poesia, cenas da vida das irmãs Petra e Elena.",
+      "descrever, por meio das memórias de Petra, a separação de duas irmãs.",
+      "sintetizar, por meio das principais cenas do filme, a história de Elena.",
+      "lançar, por meio da história de vida do autor, um filme autobiográfico.",
+      "avaliar, por meio de análise crítica, o filme em referência."
+    ],
+    certa: "E",
+    fb: {
+      A: "Quem narra com imagem e poesia é o filme, não o texto sobre ele.",
+      B: "Descrever a separação seria resumir o filme. O texto faz mais que isso.",
+      C: "Sintetizar é função da sinopse. A resenha vai além e opina.",
+      D: "Lançar um filme é papel da publicidade, e o autor do texto não é o autor do filme.",
+      E: "O texto comenta e julga a qualidade do documentário: é uma resenha crítica, cuja função é avaliar."
+    },
+    dica: "Sinopse resume; resenha crítica avalia. Procure as marcas de opinião no texto."
+  },
+  {
+    n: 40, cat: "outras", disciplina: "Física e música", fonte: "ENEM 2013 · 1º dia · questão 82", tema: "Ondas sonoras e notas musicais",
+    apoio: "O texto diz que, num piano, o Dó central e a próxima nota Dó (Dó maior) soam parecidos, mas não idênticos. Programas de computador registraram o formato da onda sonora de cada nota num mesmo intervalo de tempo T. O desenho abaixo é uma representação simplificada feita para este jogo.",
+    link: "https://descomplica.com.br/gabarito-enem/questoes/2013/primeiro-dia/em-um-piano-o-do-central-e-a-proxima-nota-do-do-maior-apresentam-sons-parecidos-mas-nao-identico/",
+    figura: "ondas",
+    enunciado: "A razão entre as frequências do Dó central e do Dó maior é de:",
+    alts: ["1/2.", "2.", "1.", "1/4.", "4."],
+    certa: "A",
+    fb: {
+      A: "Frequência é o número de ciclos por tempo. No mesmo intervalo T, o Dó central faz 1 ciclo e o Dó maior faz 2. A razão Dó central / Dó maior é 1/2. Na música, isso se chama oitava: a nota de mesmo nome, uma oitava acima, tem o dobro da frequência.",
+      B: "A razão foi invertida: 2 é Dó maior / Dó central. A pergunta pede Dó central / Dó maior.",
+      C: "Razão 1 significaria frequências iguais, ou seja, a mesma nota. Elas soam parecidas, mas não idênticas.",
+      D: "1/4 seria uma diferença de duas oitavas.",
+      E: "4 seria duas oitavas e ainda com a razão invertida."
+    },
+    dica: "\"Parecidos, mas não idênticos\": mesma nota e mesmo instrumento (timbre), alturas diferentes. Conte os ciclos dentro do mesmo T."
+  }
+];
+
+</script>
+<script>
+(function () {
+  "use strict";
+  const LETRAS = ["A", "B", "C", "D", "E"];
+  const $ = (s, el = document) => el.querySelector(s);
+  const palco = $("#palco");
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+  function fmt(s) { return esc(s).replace(/\*([^*]+)\*/g, "<em>$1</em>"); }
+  function embaralhar(a) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+
+  // ---------- Estado ----------
+  const est = {
+    tela: "inicio", cat: null, ordem: [], idx: 0, respostas: {},
+    embaralhar: true, autoCrono: true
+  };
+
+  // ---------- Relógio ----------
+  const relEl = $("#relogio");
+  function tickRelogio() {
+    const d = new Date();
+    relEl.textContent = [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2, "0")).join(":");
+  }
+  tickRelogio(); setInterval(tickRelogio, 1000);
+
+  // ---------- Cronômetro ----------
+  const cr = { dur: 180, fim: null, restante: 180, rodando: false, avisou: false };
+  const crEl = $("#crono"), crDig = $("#crono-dig"), crRot = $("#crono-rot"), crPlay = $("#crono-play"), aviso = $("#aviso-tempo");
+  const IC_PLAY = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+  const IC_PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+  function mmss(seg) { const s = Math.abs(Math.round(seg)); return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0"); }
+  function restanteAgora() { return cr.rodando ? (cr.fim - Date.now()) / 1000 : cr.restante; }
+  function desenhaCrono() {
+    const r = restanteAgora();
+    let estado = "normal";
+    if (r <= 0) { estado = "esgotado"; crDig.textContent = "+" + mmss(r); crRot.textContent = "Tempo esgotado"; }
+    else { if (r <= 30) estado = "alerta"; crDig.textContent = mmss(Math.ceil(r)); crRot.textContent = cr.rodando ? "Cronômetro" : "Pausado"; }
+    crEl.dataset.estado = estado;
+    aviso.hidden = estado !== "esgotado";
+    crPlay.innerHTML = cr.rodando ? IC_PAUSE : IC_PLAY;
+    crPlay.setAttribute("aria-label", cr.rodando ? "Pausar cronômetro" : "Iniciar cronômetro");
+    if (r <= 0 && !cr.avisou) { cr.avisou = true; if ($("#crono-som").checked) bip(); }
+  }
+  function iniciar() { if (cr.rodando) return; cr.fim = Date.now() + cr.restante * 1000; cr.rodando = true; desenhaCrono(); }
+  function pausar() { if (!cr.rodando) return; cr.restante = (cr.fim - Date.now()) / 1000; cr.rodando = false; desenhaCrono(); }
+  function alternar() { cr.rodando ? pausar() : iniciar(); }
+  function zerar(comecar) { cr.rodando = false; cr.restante = cr.dur; cr.avisou = false; if (comecar) iniciar(); else desenhaCrono(); }
+  setInterval(() => { if (cr.rodando) desenhaCrono(); }, 250);
+  crPlay.addEventListener("click", alternar);
+  $("#crono-reset").addEventListener("click", () => zerar(false));
+
+  let audio = null;
+  function bip() {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.35, 0.7].forEach(t => {
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.type = "sine"; o.frequency.value = 880;
+        g.gain.setValueAtTime(0.0001, audio.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.35, audio.currentTime + t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + t + 0.25);
+        o.connect(g).connect(audio.destination); o.start(audio.currentTime + t); o.stop(audio.currentTime + t + 0.3);
+      });
+    } catch (e) { /* som indisponível */ }
+  }
+
+  const cfgBtn = $("#crono-cfg"), pop = $("#crono-pop"), minIn = $("#crono-min");
+  function abrePop(abrir) { pop.hidden = !abrir; cfgBtn.setAttribute("aria-expanded", String(abrir)); if (abrir) minIn.focus(); }
+  cfgBtn.addEventListener("click", e => { e.stopPropagation(); abrePop(pop.hidden); });
+  document.addEventListener("click", e => { if (!pop.hidden && !pop.contains(e.target) && e.target !== cfgBtn) abrePop(false); });
+  function defineMin(m) {
+    m = Math.min(60, Math.max(0.5, Number(m) || 3));
+    minIn.value = m; cr.dur = Math.round(m * 60);
+    const rodava = cr.rodando; zerar(rodava);
+    try { localStorage.setItem("artes-enem-min", String(m)); } catch (e) {}
+  }
+  $("#crono-aplicar").addEventListener("click", () => { defineMin(minIn.value); abrePop(false); });
+  minIn.addEventListener("keydown", e => { if (e.key === "Enter") { defineMin(minIn.value); abrePop(false); } e.stopPropagation(); });
+  pop.querySelectorAll("[data-min]").forEach(b => b.addEventListener("click", () => { defineMin(b.dataset.min); abrePop(false); }));
+  try { const m = localStorage.getItem("artes-enem-min"); if (m) { minIn.value = m; cr.dur = Math.round(Number(m) * 60); cr.restante = cr.dur; } } catch (e) {}
+  desenhaCrono();
+
+  // ---------- Tema e tela cheia ----------
+  $("#tema").addEventListener("click", () => {
+    const raiz = document.documentElement;
+    const escuroAgora = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    raiz.dataset.theme = escuroAgora ? "light" : "dark";
+  });
+  function telaCheia() {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    } catch (e) {}
+  }
+  $("#tela").addEventListener("click", telaCheia);
+
+  // ---------- Figuras ----------
+  function figOndas() {
+    const W = 640, H = 310, x0 = 140, x1 = 620, amp = 34;
+    const onda = (k, cy) => {
+      let d = "";
+      for (let i = 0; i <= 400; i++) {
+        const t = i / 400, ang = 2 * Math.PI * k * t;
+        const y = Math.sin(ang) + 0.22 * Math.sin(2 * ang + 0.7) + 0.08 * Math.sin(3 * ang + 1.3);
+        d += (i ? "L" : "M") + (x0 + t * (x1 - x0)).toFixed(1) + " " + (cy - y * amp * 0.72).toFixed(1);
+      }
+      return d;
+    };
+    const linha = (cy, k, nome) => `
+      <text x="16" y="${cy - 6}" font-size="17" font-weight="700" fill="var(--ink)" font-family="var(--font-body)">${nome}</text>
+      <line x1="${x0}" y1="${cy}" x2="${x1}" y2="${cy}" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="${x0}" y1="${cy - 46}" x2="${x0}" y2="${cy + 46}" stroke="var(--cinza)" stroke-width="1.5"/>
+      <line x1="${x1}" y1="${cy - 46}" x2="${x1}" y2="${cy + 46}" stroke="var(--cinza)" stroke-width="1.5" stroke-dasharray="5 5"/>
+      <path d="${onda(k, cy)}" fill="none" stroke="var(--azul)" stroke-width="3.5" stroke-linejoin="round"/>`;
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Duas ondas no mesmo intervalo T: o Dó central faz um ciclo e o Dó maior faz dois ciclos">
+      ${linha(80, 1, "Dó central")}
+      ${linha(210, 2, "Dó maior")}
+      <path d="M${x0} 264 v10 H${x1} v-10" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+      <text x="${(x0 + x1) / 2}" y="300" text-anchor="middle" font-size="17" font-weight="700" fill="var(--ink)" font-family="var(--font-body)">intervalo de tempo T</text>
+    </svg>`;
+  }
+  function figQuadrados() {
+    let x = 40, y = 30, lado = 220, out = "";
+    for (let i = 0; i < 6; i++) {
+      out += `<rect x="${x}" y="${y}" width="${lado}" height="${lado}" fill="${i === 0 ? "var(--ok-bg)" : "none"}" stroke="var(--azul)" stroke-width="${i === 0 ? 3 : 2.2}"/>`;
+      const nx = x + lado / 2, ny = y + lado; x = nx; y = ny; lado = lado / 2;
+    }
+    const lab = (t, xx, yy, a = "middle") => `<text x="${xx}" y="${yy}" text-anchor="${a}" font-size="18" font-weight="700" fill="var(--ink)" font-family="var(--font-body)">${t}</text>`;
+    return `<svg viewBox="0 0 520 500" role="img" aria-label="Sequência de quadrados cada vez menores, cada um com metade do lado do anterior">
+      ${out}${lab("P", 28, 26, "end")}${lab("R", 272, 26, "start")}${lab("S", 272, 262, "start")}${lab("T", 28, 262, "end")}
+      ${lab("lado 1", 150, 145)}
+    </svg>`;
+  }
+  const FIGURAS = { ondas: figOndas, quadrados: figQuadrados };
+
+  // ---------- Telas ----------
+  function contar(cat) { return QUESTOES.filter(q => q.cat === cat).length; }
+
+  function telaInicio() {
+    est.tela = "inicio";
+    zerar(false);
+    const cards = CATEGORIAS.map(c => `
+      <button class="cartao" type="button" data-cat="${c.id}">
+        <h3>${esc(c.nome)}</h3>
+        <p>${esc(c.desc)}</p>
+        <span class="qtd">${contar(c.id)} questões</span>
+      </button>`).join("");
+    palco.innerHTML = `
+      <section class="abre">
+        <span class="eyebrow">Linguagens, Códigos e suas Tecnologias</span>
+        <h1>Escolha a linguagem da rodada</h1>
+        <p>São ${QUESTOES.length} questões que já caíram no ENEM. Leiam o apoio, discutam e cliquem na alternativa: o jogo mostra o gabarito e explica cada opção.</p>
+      </section>
+      <div class="grade">
+        <button class="cartao todas" type="button" data-cat="todas">
+          <h3>Todas as linguagens misturadas</h3>
+          <p>Uma rodada com questões de todas as categorias.</p>
+          <span class="qtd">${QUESTOES.length} questões</span>
+        </button>
+        ${cards}
+      </div>
+      <div class="opcoes">
+        <label><input type="checkbox" id="op-emb" ${est.embaralhar ? "checked" : ""}> Embaralhar a ordem das questões</label>
+        <label><input type="checkbox" id="op-auto" ${est.autoCrono ? "checked" : ""}> Iniciar o cronômetro em cada questão</label>
+      </div>
+      <p class="atalhos">Atalhos: <kbd>A</kbd>–<kbd>E</kbd> respondem · <kbd>Enter</kbd> próxima · <kbd>T</kbd> pausa o tempo · <kbd>R</kbd> reinicia o tempo · <kbd>F</kbd> tela cheia</p>`;
+    $("#op-emb").addEventListener("change", e => { est.embaralhar = e.target.checked; });
+    $("#op-auto").addEventListener("change", e => { est.autoCrono = e.target.checked; });
+    palco.querySelectorAll("[data-cat]").forEach(b => b.addEventListener("click", () => comecar(b.dataset.cat)));
+    window.scrollTo(0, 0);
+  }
+
+  function comecar(cat) {
+    est.cat = cat;
+    let lista = cat === "todas" ? QUESTOES.slice() : QUESTOES.filter(q => q.cat === cat);
+    if (est.embaralhar) lista = embaralhar(lista);
+    est.ordem = lista.map(q => q.n); est.idx = 0; est.respostas = {};
+    telaQuestao();
+  }
+
+  function nomeCat(id) { const c = CATEGORIAS.find(c => c.id === id); return c ? c.nome : "Todas as linguagens"; }
+
+  function trilha() {
+    return est.ordem.map((n, i) => {
+      const r = est.respostas[n]; const q = QUESTOES.find(x => x.n === n);
+      let cl = r ? (r === q.certa ? "ok" : "erro") : "";
+      if (i === est.idx) cl += " atual";
+      return `<i class="${cl.trim()}"></i>`;
+    }).join("");
+  }
+
+  function telaQuestao() {
+    est.tela = "questao";
+    const q = QUESTOES.find(x => x.n === est.ordem[est.idx]);
+    const resp = est.respostas[q.n];
+    const fig = q.figura ? `<figure class="figura" style="margin:0">${FIGURAS[q.figura]()}<figcaption>Desenho simplificado feito para este jogo.</figcaption></figure>` : "";
+    palco.innerHTML = `
+      <div class="cabeca">
+        <div class="meta">
+          <span class="tag">${esc(nomeCat(q.cat))}</span>
+          ${q.disciplina ? `<span class="tag sub">${esc(q.disciplina)}</span>` : ""}
+          <span class="tag sub">${esc(q.tema)}</span>
+        </div>
+        <span class="prog">Questão ${est.idx + 1} de ${est.ordem.length}</span>
+      </div>
+      <div class="trilha" aria-hidden="true">${trilha()}</div>
+      <span class="fonte">${esc(q.fonte)}</span>
+      <section class="apoio" aria-label="Texto e imagem de apoio">
+        <span class="rot">Apoio da questão (resumo)</span>
+        <p>${fmt(q.apoio)}</p>
+        ${fig}
+        <p><a href="${esc(q.link)}" target="_blank" rel="noopener">Ver a questão original com o texto e a imagem completos</a></p>
+      </section>
+      <p class="enunciado">${fmt(q.enunciado)}</p>
+      <ol class="alts">
+        ${q.alts.map((a, i) => `<li><button class="alt" type="button" data-l="${LETRAS[i]}"><span class="bolha">${LETRAS[i]}</span><span class="txt">${fmt(a)}</span><span class="selo"></span></button></li>`).join("")}
+      </ol>
+      <div id="retorno"></div>
+      <div class="acoes">
+        <button class="btn sec" type="button" id="sair">Escolher outra linguagem</button>
+        <button class="btn sec" type="button" id="pular">${resp ? "Próxima questão" : "Pular questão"}</button>
+      </div>`;
+    palco.querySelectorAll(".alt").forEach(b => b.addEventListener("click", () => responder(b.dataset.l)));
+    $("#sair").addEventListener("click", telaInicio);
+    $("#pular").addEventListener("click", proxima);
+    window.scrollTo(0, 0);
+    if (resp) mostrarRetorno(q, resp, false);
+    else zerar(est.autoCrono);
+  }
+
+  function responder(l) {
+    const q = QUESTOES.find(x => x.n === est.ordem[est.idx]);
+    if (est.respostas[q.n]) return;
+    est.respostas[q.n] = l;
+    pausar();
+    mostrarRetorno(q, l, true);
+  }
+
+  function mostrarRetorno(q, l, rolar) {
+    palco.querySelectorAll(".alt").forEach(b => {
+      b.disabled = true;
+      const x = b.dataset.l, selo = $(".selo", b);
+      if (x === q.certa) { b.classList.add("certa"); selo.textContent = x === l ? "Correta · escolha da turma" : "Correta"; }
+      else if (x === l) { b.classList.add("errada"); selo.textContent = "Escolha da turma"; }
+      else b.classList.add("apagada");
+    });
+    const acertou = l === q.certa;
+    const erradas = LETRAS.filter(x => x !== q.certa).map(x =>
+      `<li class="${x === l ? "marcada" : ""}"><b>${x}</b><span>${fmt(q.fb[x])}</span></li>`).join("");
+    const ret = $("#retorno");
+    ret.innerHTML = `
+      <section class="retorno" id="ret" aria-live="polite">
+        <div class="veredito ${acertou ? "ok" : "erro"}">
+          <h2>${acertou ? "Resposta correta!" : "Resposta incorreta"}</h2>
+          <span>Gabarito: ${q.certa}${acertou ? "" : ` · a turma marcou ${l}`}</span>
+        </div>
+        <div class="porque">
+          <h3>Por que a ${q.certa} está correta</h3>
+          <p class="certa-txt">${fmt(q.fb[q.certa])}</p>
+          <h3>Por que as outras estão erradas</h3>
+          <ul class="erradas">${erradas}</ul>
+        </div>
+        <div class="dica"><b>Dica de prova</b><p>${fmt(q.dica)}</p></div>
+      </section>`;
+    const ultima = est.idx === est.ordem.length - 1;
+    const pular = $("#pular");
+    pular.textContent = ultima ? "Ver resultado da rodada" : "Próxima questão";
+    pular.className = "btn";
+    if (rolar) { try { pular.focus({ preventScroll: true }); } catch (e) {} }
+    if (rolar) { const alvo = $("#ret"); const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches; alvo.scrollIntoView({ behavior: reduz ? "auto" : "smooth", block: "start" }); }
+  }
+
+  function proxima() {
+    if (est.idx < est.ordem.length - 1) { est.idx++; telaQuestao(); }
+    else telaFim();
+  }
+
+  function telaFim() {
+    est.tela = "fim";
+    pausar();
+    const tot = est.ordem.length;
+    const acertos = est.ordem.filter(n => { const q = QUESTOES.find(x => x.n === n); return est.respostas[n] === q.certa; }).length;
+    const respondidas = est.ordem.filter(n => est.respostas[n]).length;
+    const itens = est.ordem.map((n, i) => {
+      const q = QUESTOES.find(x => x.n === n), r = est.respostas[n];
+      const st = !r ? ["pulo", "–"] : r === q.certa ? ["ok", "✓"] : ["erro", "✗"];
+      return `<li><span class="st ${st[0]}">${st[1]}</span><span>${i + 1}. ${esc(q.tema)} <span class="fonte">· ${esc(q.fonte)}</span></span><span class="lt">${r ? `marcou ${r} · gabarito ${q.certa}` : `pulada · gabarito ${q.certa}`}</span></li>`;
+    }).join("");
+    palco.innerHTML = `
+      <section class="abre">
+        <span class="eyebrow">Fim da rodada · ${esc(nomeCat(est.cat))}</span>
+        <h1>Resultado da turma</h1>
+      </section>
+      <div class="placar">
+        <span class="grande">${acertos}<small> de ${tot}</small></span>
+        <span>${respondidas < tot ? `${tot - respondidas} pulada(s). ` : ""}${acertos === tot ? "Rodada perfeita!" : acertos >= tot * 0.7 ? "Ótimo desempenho." : acertos >= tot * 0.4 ? "Bom caminho: revisem as que erraram." : "Vale revisar o guia e jogar de novo."}</span>
+      </div>
+      <ol class="lista-fim">${itens}</ol>
+      <div class="acoes">
+        <button class="btn sec" type="button" id="outra">Escolher outra linguagem</button>
+        <button class="btn amarelo" type="button" id="denovo">Jogar esta rodada de novo</button>
+      </div>`;
+    $("#outra").addEventListener("click", telaInicio);
+    $("#denovo").addEventListener("click", () => comecar(est.cat));
+    window.scrollTo(0, 0);
+  }
+
+  // ---------- Teclado ----------
+  document.addEventListener("keydown", e => {
+    if (e.target.closest && e.target.closest("input")) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = e.key.toUpperCase();
+    if (k === "F") { telaCheia(); return; }
+    if (k === "T") { alternar(); return; }
+    if (k === "R") { zerar(false); return; }
+    if (k === "ESCAPE" && !pop.hidden) { abrePop(false); return; }
+    if (est.tela !== "questao") return;
+    const q = QUESTOES.find(x => x.n === est.ordem[est.idx]);
+    const idx = LETRAS.indexOf(k) >= 0 ? LETRAS.indexOf(k) : ["1", "2", "3", "4", "5"].indexOf(e.key);
+    if (idx >= 0 && !est.respostas[q.n]) { e.preventDefault(); responder(LETRAS[idx]); return; }
+    if ((e.key === "Enter" || e.key === "ArrowRight") && est.respostas[q.n]) {
+      const b = e.target.closest && e.target.closest("button");
+      if (e.key === "Enter" && b && !b.disabled) return;
+      e.preventDefault(); proxima();
+    }
+  });
+
+  // ---------- Atualização ao vivo (preserva a rodada) ----------
+  function start(dados) {
+    if (dados && dados.est && dados.est.tela !== "inicio") {
+      Object.assign(est, dados.est);
+      if (est.tela === "fim") telaFim(); else telaQuestao();
+    } else telaInicio();
+  }
+  if (window.claude && window.claude.hot) {
+    try { window.claude.hot.snapshot(() => ({ est })); } catch (e) {}
+  }
+  window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+
+</body></html>
