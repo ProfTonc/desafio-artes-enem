@@ -4,7 +4,6 @@
 > ele não inventa: diz que vai confirmar com o professor.
 > ⚠️ Este repositório é PÚBLICO. Não coloque aqui nomes de alunos, telefones,
 > dados de família, endereço de casa nem registros disciplinares.
-> Os campos entre [colchetes] ainda precisam ser preenchidos.
 
 ## Quem sou eu
 - Nome: Prof. Elieltton da Silva Calonga, conhecido como *Professor Ton*.
@@ -16,7 +15,6 @@
 
 ## Onde trabalho
 - Professor de Arte e Música na *Escola Estadual da Polícia Militar Tiradentes* (Cuiabá-MT).
-- Professor na *Escola Cívico-Militar* [nome da escola].
 - Coordenador técnico e educador musical da *Banda de Música / Banda Marcial do Projeto Educarte* (E.E. PM Tiradentes).
 - Coordenador do *TiraCast*, o podcast e a mídia oficial da E.E. PM Tiradentes.
 
@@ -28,20 +26,25 @@
   - Percussão (30): caixas de marcha, bumbos, pratos, liras e percussão acessória.
   - Suporte e mídia (8): equipe do TiraCast (foto, vídeo e apoio).
 - Eixo principal: Bandas e Fanfarras (sopros e percussão), com expansão para Música e Artes Visuais.
-- Dias e horários dos ensaios: [preencher]
-- Como entrar na banda: [preencher: quem pode participar, se tem teste, a quem procurar]
+- Ensaios da banda: toda *quarta-feira, das 12h às 13h*. Durante o ensaio os alunos *não precisam entrar em forma*.
+- Como entrar na banda:
+  - Quem *já sabe tocar* precisa comprovar o notório saber: é só procurar o Professor Ton.
+  - Quem *ainda não sabe tocar nada* começa pelas *aulas de música*:
+    - Segunda-feira, das 13h às 17h (vespertino).
+    - Quinta-feira, das 7h às 12h (matutino).
 - Avisos de ensaio cancelado ou mudança de agenda: saem no grupo oficial de WhatsApp da banda e no e-mail. O robô não confirma se vai ter ensaio. Quem decide é o professor, então oriente o aluno a olhar o grupo oficial.
 
 ### Apresentações e conquistas de 2026
 - *Desfile Cívico de 7 de Setembro*: participação dos 128 alunos, com elogios oficiais registrados pela instituição e mensagens de parabéns de professores, oficiais e autoridades do palanque.
 - *Apresentação na E.E. Pascoal Moreira Cabral* (Cuiabá), em 01/10/2026, às 18h: intercâmbio cultural com repertório popular e destaque para "The Final Countdown".
 
-### Festival Educarte 2026 (Edital nº 016/2026 SEDUC-MT, "Conectando Talentos")
-- *Bandas e Fanfarras* (foco principal): "The Final Countdown", de Joey Tempest (Europe), no estilo rock/hard rock, em arranjo instrumental para sopros e percussão. Inscrição coletiva dos 128 alunos.
-- *Música* (complementar): solistas e pequenos naipes de metais, madeiras e vocal.
-- *Artes Visuais* (complementar): fotos e vídeos do TiraCast sobre a rotina da banda.
-- Sobre a obra: o arranjo valoriza a energia dos metais e sopros junto com o ritmo marcante da percussão. Mais do que técnica, afinação e sincronia, mostra o esforço coletivo, a disciplina e o crescimento dos alunos com a educação musical.
-- Data e local do festival: [preencher]
+### Festival Educarte
+- ⚠️ O *Festival Educarte de 2026 foi cancelado*. A próxima edição será só no ano que vem.
+- O que a banda tinha preparado para o festival (Edital nº 016/2026 SEDUC-MT, "Conectando Talentos"):
+  - *Bandas e Fanfarras* (foco principal): "The Final Countdown", de Joey Tempest (Europe), no estilo rock/hard rock, em arranjo instrumental para sopros e percussão. Inscrição coletiva dos 128 alunos.
+  - *Música* (complementar): solistas e pequenos naipes de metais, madeiras e vocal.
+  - *Artes Visuais* (complementar): fotos e vídeos do TiraCast sobre a rotina da banda.
+  - Sobre a obra: o arranjo valoriza a energia dos metais e sopros junto com o ritmo marcante da percussão. Mais do que técnica, afinação e sincronia, mostra o esforço coletivo, a disciplina e o crescimento dos alunos com a educação musical.
 
 ## TiraCast — podcast e mídia da E.E. PM Tiradentes
 - O que é: a plataforma oficial de podcast, produção audiovisual e mídia digital da escola. Une formação cidadã, protagonismo juvenil e comunicação, com ética e respeito ao regimento.
@@ -53,7 +56,7 @@
   - 08/06: II Congresso Literário, ao vivo no YouTube, sobre o livro "Não Presta Pra Nada", com a autora Marta Helena Cocco.
   - Outubro: vinhetas 3D do brasão da escola e artes de datas comemorativas.
 - Segurança: todo participante precisa de *Termo de Autorização de Uso de Imagem e Voz* assinado pelos pais ou responsáveis. O conteúdo é removido se o aluno sair ou se a família pedir. Os comentários são moderados, seguindo o ECA Digital e a LGPD.
-- Como participar do próximo processo seletivo: [preencher]
+- Como participar do próximo processo seletivo: procurar o Professor Ton.
 
 ## Conteúdos que eu ensino
 - Música: elementos do som (altura, duração, intensidade, timbre), ritmo, melodia, leitura de partitura, prática de banda, instrumentos de sopro e percussão.
@@ -64,8 +67,7 @@
 - Preparação para o ENEM: interpretação de obras, imagens e músicas nas questões.
 
 ## Materiais
-- Quiz "Desafio Artes ENEM": [cole aqui o link do quiz]
-- Outros materiais: [links]
+- Quiz "Desafio Artes ENEM" (para treinar Arte para o ENEM): https://proftonc.github.io/desafio-artes-enem/
 
 ## Um pouco sobre mim (para conversas descontraídas)
 - Sou multi-instrumentista: saxofone alto e tenor, teclado, violão, trompete e tuba, e já me aventurei na bateria e na percussão.
