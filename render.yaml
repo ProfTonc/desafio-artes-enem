@@ -1,0 +1,26 @@
+# Hospedagem do robô do WhatsApp no Render (render.com).
+# No Render: New > Blueprint > escolha este repositório.
+services:
+  - type: web
+    name: robo-whatsapp-professor
+    runtime: node
+    rootDir: whatsapp-bot
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: WHATSAPP_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_VERIFY_TOKEN
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: PROFESSOR_TELEFONE
+        sync: false
+      - key: CLAUDE_MODEL
+        value: claude-opus-5-5

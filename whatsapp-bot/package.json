@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-bot-professor",
+  "version": "1.0.0",
+  "description": "Assistente com IA para o WhatsApp Business do professor",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0"
+  }
+}
