@@ -1,8 +1,16 @@
 // Envio de mensagens pela API oficial do WhatsApp (Meta).
 import crypto from "node:crypto";
 
-const VERSAO = process.env.GRAPH_API_VERSION || "v23.0";
+const VERSAO = process.env.GRAPH_API_VERSION || "v25.0";
 const LIMITE_TEXTO = 4000; // o WhatsApp aceita até 4096 caracteres
+
+// Celulares do Brasil às vezes chegam da Meta sem o 9 da frente
+// (5565999998888 vira 556599998888). Esta chave trata os dois como iguais.
+export function chaveNumero(numero) {
+  const digitos = String(numero || "").replace(/\D/g, "");
+  const m = digitos.match(/^55(\d{2})9(\d{8})$/);
+  return m ? `55${m[1]}${m[2]}` : digitos;
+}
 
 async function chamarApi(corpo) {
   const url = `https://graph.facebook.com/${VERSAO}/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;

@@ -3,14 +3,17 @@ import http from "node:http";
 import { fileURLToPath } from "node:url";
 import { responder, MARCA_CHAMAR_PROFESSOR } from "./ia.js";
 import * as memoria from "./memoria.js";
-import { enviarTexto, marcarComoLida, assinaturaValida, extrairMensagens } from "./whatsapp.js";
+import { enviarTexto, marcarComoLida, assinaturaValida, extrairMensagens, chaveNumero } from "./whatsapp.js";
 
 const PROFESSOR = (process.env.PROFESSOR_TELEFONE || "").replace(/\D/g, "");
+// Formato do número do professor que a Meta usa (aprendido quando ele manda mensagem).
+let professorWaId = PROFESSOR;
+const ehProfessor = (numero) => PROFESSOR && chaveNumero(numero) === chaveNumero(PROFESSOR);
 
 async function avisarProfessor(texto) {
   if (!PROFESSOR) return;
   try {
-    await enviarTexto(PROFESSOR, texto);
+    await enviarTexto(professorWaId, texto);
   } catch (erro) {
     // A Meta só deixa mandar mensagem livre para quem falou com o número
     // nas últimas 24h. Veja a dica no README.
@@ -43,7 +46,9 @@ async function comandoDoProfessor(texto) {
 async function processar(msg) {
   await marcarComoLida(msg.id);
 
-  if (PROFESSOR && msg.de === PROFESSOR && msg.texto.startsWith("#")) {
+  if (ehProfessor(msg.de)) professorWaId = msg.de;
+
+  if (ehProfessor(msg.de) && msg.texto.startsWith("#")) {
     await enviarTexto(msg.de, await comandoDoProfessor(msg.texto));
     return;
   }
