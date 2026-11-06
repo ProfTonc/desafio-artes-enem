@@ -1,0 +1,17 @@
+# Servidor do chat online do Professor Ton (Cloudflare Workers, plano grátis).
+name = "chat-professor-ton"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# De onde o chat lê as informações do professor (o mesmo arquivo do robô).
+INFO_URL = "https://raw.githubusercontent.com/ProfTonc/desafio-artes-enem/main/whatsapp-bot/config/professor.md"
+# Só a página do GitHub Pages pode usar este servidor.
+ALLOWED_ORIGIN = "https://proftonc.github.io"
+CLAUDE_MODEL = "claude-opus-5-5"
+# Máximo de mensagens por pessoa (endereço de internet) por hora.
+LIMITE_POR_HORA = "30"
+
+# A chave da IA NÃO fica aqui. Ela é cadastrada como segredo no painel
+# da Cloudflare: Settings > Variables and Secrets > ANTHROPIC_API_KEY
