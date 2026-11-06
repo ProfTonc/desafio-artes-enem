@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Assistente do Professor Ton</title>
+<meta name="description" content="Tire dúvidas sobre Arte, Música, ENEM, a Banda do Educarte e o TiraCast com o assistente virtual do Professor Ton.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #004C99; --azul-forte: #003A75; --amarelo: #F6BE00;
+    --bg: #F3F5F9; --surface: #FFFFFF; --ink: #0F1C2E; --ink-soft: #4A5566;
+    --line: #D6DCE6; --balao-eu: #004C99; --balao-eu-ink: #FFFFFF;
+    --dica-bg: #FFF5D1; --dica-ink: #5A4500; --erro-bg: #FBE6E4; --erro: #C0352B;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-body: "Atkinson Hyperlegible", "Segoe UI", Verdana, system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0D1520; --surface: #162232; --ink: #E8EDF4; --ink-soft: #A7B3C4;
+      --line: #2A3A50; --balao-eu: #2F6FB8; --dica-bg: #3A3010; --dica-ink: #F6DC8A;
+      --erro-bg: #3D1A17; --erro: #FF8A80;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink); font-family: var(--font-body);
+    font-size: 17px; line-height: 1.5; display: flex; flex-direction: column;
+  }
+  header {
+    background: var(--azul); color: #fff; padding: 14px 16px;
+    padding-top: max(14px, env(safe-area-inset-top));
+    display: flex; align-items: center; gap: 12px; border-bottom: 4px solid var(--amarelo);
+  }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--amarelo); color: var(--azul-forte);
+    display: grid; place-items: center; font-size: 24px; flex: none;
+  }
+  header h1 { font-family: var(--font-display); font-weight: 800; font-size: 19px; margin: 0; line-height: 1.2; }
+  header p { margin: 0; font-size: 14px; opacity: .9; }
+  main { flex: 1; overflow-y: auto; padding: 16px; }
+  .conversa { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+  .aviso {
+    background: var(--dica-bg); color: var(--dica-ink); border-radius: 12px; padding: 10px 14px; font-size: 15px;
+  }
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 16px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg.ia { background: var(--surface); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.eu { background: var(--balao-eu); color: var(--balao-eu-ink); align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg.erro { background: var(--erro-bg); color: var(--erro); align-self: center; font-size: 15px; }
+  .msg a { color: inherit; font-weight: 700; }
+  .digitando { align-self: flex-start; color: var(--ink-soft); font-size: 15px; padding: 4px 8px; }
+  .sugestoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .sugestoes button {
+    font: inherit; font-size: 15px; background: var(--surface); color: var(--azul); border: 1.5px solid var(--azul);
+    border-radius: 999px; padding: 6px 14px; cursor: pointer;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sugestoes button { color: #8CC2FF; border-color: #8CC2FF; } }
+  .chamar {
+    align-self: stretch; background: var(--surface); border: 2px solid #25D366; border-radius: 14px; padding: 12px 14px;
+  }
+  .chamar a {
+    display: inline-block; margin-top: 8px; background: #1FAF54; color: #fff; text-decoration: none;
+    font-weight: 700; padding: 8px 16px; border-radius: 999px;
+  }
+  form {
+    display: flex; gap: 8px; padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+    background: var(--surface); border-top: 1px solid var(--line);
+  }
+  form .linha { display: flex; gap: 8px; max-width: 720px; margin: 0 auto; width: 100%; }
+  textarea {
+    flex: 1; font: inherit; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line);
+    border-radius: 20px; padding: 9px 14px; resize: none; max-height: 140px; min-width: 0;
+  }
+  textarea:focus { outline: 2px solid var(--azul); outline-offset: 1px; }
+  form button {
+    flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--azul); color: #fff;
+    font-size: 20px; cursor: pointer; align-self: flex-end;
+  }
+  form button:disabled { opacity: .5; cursor: default; }
+  .rodape { text-align: center; font-size: 13px; color: var(--ink-soft); margin-top: 6px; }
+  .rodape a { color: inherit; }
+</style>
+</head>
+<body>
+<header>
+  <div class="avatar" aria-hidden="true">🎺</div>
+  <div>
+    <h1>Assistente do Professor Ton</h1>
+    <p>Arte, Música, ENEM, Banda Educarte e TiraCast</p>
+  </div>
+</header>
+
+<main id="rolagem">
+  <div class="conversa" id="conversa" aria-live="polite">
+    <div class="aviso">🤖 Este chat é uma <b>inteligência artificial</b> e pode errar. Não escreva dados pessoais (nome completo, telefone, endereço). Para assuntos importantes, fale com o professor no WhatsApp.</div>
+    <div class="msg ia">Oi! 👋 Sou o assistente virtual do Professor Ton. Posso tirar dúvidas sobre a Banda do Educarte, o TiraCast, as aulas de música e te ajudar a estudar Arte e Música para o ENEM. Em que posso ajudar?</div>
+    <div class="sugestoes" id="sugestoes">
+      <button type="button">Quando são os ensaios da banda?</button>
+      <button type="button">Como faço para entrar na banda?</button>
+      <button type="button">O que é o TiraCast?</button>
+      <button type="button">Me explica o Modernismo no Brasil</button>
+      <button type="button">Quero treinar Arte para o ENEM</button>
+    </div>
+  </div>
+  <p class="rodape"><a href="../">🎨 Treine com o quiz Desafio Artes ENEM</a></p>
+</main>
+
+<form id="form">
+  <div class="linha">
+    <label for="texto" class="sr" style="position:absolute;left:-9999px">Sua mensagem</label>
+    <textarea id="texto" rows="1" maxlength="1500" placeholder="Escreva sua dúvida…" autocomplete="off"></textarea>
+    <button id="enviar" type="submit" aria-label="Enviar">➤</button>
+  </div>
+</form>
+
+<script src="config.js"></script>
+<script>
+(function () {
+  const conversaEl = document.getElementById("conversa");
+  const rolagem = document.getElementById("rolagem");
+  const form = document.getElementById("form");
+  const texto = document.getElementById("texto");
+  const enviar = document.getElementById("enviar");
+  const CHAVE = "chat-professor-ton";
+  let historico = [];
+  let ocupado = false;
+
+  try { historico = JSON.parse(sessionStorage.getItem(CHAVE) || "[]"); } catch (e) { historico = []; }
+  function salvar() { try { sessionStorage.setItem(CHAVE, JSON.stringify(historico.slice(-20))); } catch (e) {} }
+
+  // Formatação simples do WhatsApp (*negrito*, _itálico_) e links, com segurança.
+  function formatar(t) {
+    const esc = t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return esc
+      .replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+      .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<b>$2</b>")
+      .replace(/(^|[\s(])_([^_\n]+)_/g, "$1<i>$2</i>");
+  }
+
+  function rolar() { rolagem.scrollTop = rolagem.scrollHeight; }
+
+  function adicionar(classe, conteudo) {
+    const div = document.createElement("div");
+    div.className = "msg " + classe;
+    if (classe === "eu") div.textContent = conteudo; else div.innerHTML = formatar(conteudo);
+    conversaEl.appendChild(div);
+    rolar();
+    return div;
+  }
+
+  function mostrarChamarProfessor() {
+    const div = document.createElement("div");
+    div.className = "chamar";
+    const numero = (window.WHATSAPP_PROFESSOR || "").replace(/\D/g, "");
+    div.innerHTML = "📲 <b>Para isso, fale direto com o Professor Ton.</b><br>Volte para a conversa no WhatsApp e mande sua mensagem. Ele responde assim que puder."
+      + (numero ? '<br><a href="https://wa.me/' + numero + '" target="_blank" rel="noopener">Abrir WhatsApp do professor</a>' : "");
+    conversaEl.appendChild(div);
+    rolar();
+  }
+
+  function esconderSugestoes() {
+    const s = document.getElementById("sugestoes");
+    if (s) s.remove();
+  }
+
+  // Mostra a conversa salva (se a página foi recarregada).
+  if (historico.length) {
+    esconderSugestoes();
+    historico.forEach(function (m) { adicionar(m.role === "user" ? "eu" : "ia", m.content); });
+  }
+
+  async function mandar(mensagem) {
+    mensagem = mensagem.trim();
+    if (!mensagem || ocupado) return;
+    if (!window.CHAT_API_URL) {
+      adicionar("erro", "O chat ainda está sendo configurado. Volte daqui a pouco! 🙂");
+      return;
+    }
+    ocupado = true; enviar.disabled = true;
+    esconderSugestoes();
+    adicionar("eu", mensagem);
+    historico.push({ role: "user", content: mensagem });
+    const digitando = document.createElement("div");
+    digitando.className = "digitando";
+    digitando.textContent = "Digitando…";
+    conversaEl.appendChild(digitando); rolar();
+
+    try {
+      const r = await fetch(window.CHAT_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mensagens: historico.slice(-20) }),
+      });
+      const dados = await r.json().catch(function () { return {}; });
+      if (!r.ok || !dados.resposta) throw new Error(dados.erro || "Não consegui responder agora. Tente de novo. 🙏");
+      historico.push({ role: "assistant", content: dados.resposta });
+      salvar();
+      digitando.remove();
+      adicionar("ia", dados.resposta);
+      if (dados.chamarProfessor) mostrarChamarProfessor();
+    } catch (erro) {
+      historico.pop(); // tira a pergunta que não teve resposta
+      digitando.remove();
+      adicionar("erro", erro.message && erro.message !== "Failed to fetch" ? erro.message : "Sem conexão agora. Confira sua internet e tente de novo.");
+    } finally {
+      ocupado = false; enviar.disabled = false; texto.focus();
+    }
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const t = texto.value; texto.value = ""; ajustarAltura();
+    mandar(t);
+  });
+  texto.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+  });
+  function ajustarAltura() { texto.style.height = "auto"; texto.style.height = Math.min(texto.scrollHeight, 140) + "px"; }
+  texto.addEventListener("input", ajustarAltura);
+
+  document.querySelectorAll("#sugestoes button").forEach(function (b) {
+    b.addEventListener("click", function () { mandar(b.textContent); });
+  });
+})();
+</script>
+</body>
+</html>

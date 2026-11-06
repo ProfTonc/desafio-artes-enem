@@ -1,3 +1,5 @@
+import { chaveNumero } from "./whatsapp.js";
+
 // Memória das conversas, guardada na memória do servidor.
 // Se o servidor reiniciar, as conversas recomeçam do zero (sem problema).
 
@@ -9,7 +11,8 @@ const LIMITE_POR_HORA = Number(process.env.LIMITE_POR_HORA || 30);
 /** @type {Map<string, {historico: any[], atualizado: number, pausadoAte: number, envios: number[], fila: Promise<void>}>} */
 const conversas = new Map();
 
-function pegar(numero) {
+function pegar(numeroOriginal) {
+  const numero = chaveNumero(numeroOriginal);
   let c = conversas.get(numero);
   if (!c || Date.now() - c.atualizado > CONVERSA_EXPIRA_MS) {
     c = { historico: [], atualizado: Date.now(), pausadoAte: c?.pausadoAte || 0, envios: [], fila: Promise.resolve() };

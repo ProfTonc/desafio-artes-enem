@@ -105,12 +105,13 @@ test("chama o professor, pausa o robô e religa com #voltar", async () => {
   await esperar(300);
   assert.equal(pedidosIA.length, antes, "robô pausado não deve chamar a IA");
 
-  await postar(aviso("5511900000000", "#voltar 5511922222222", "p1"));
+  // A Meta manda o número do professor sem o 9 e ele digita o do aluno com o 9.
+  await postar(aviso("551100000000", "#voltar 5511922222222", "p1"));
   await esperar(300);
-  assert.match(textosPara("5511900000000").at(-1), /ligado de novo/);
+  assert.match(textosPara("551100000000").at(-1), /ligado de novo/);
 
   proximaResposta = "Voltei!";
-  await postar(aviso("5511922222222", "oi de novo", "b3"));
+  await postar(aviso("551122222222", "oi de novo", "b3")); // mesmo aluno, sem o 9
   await esperar(300);
-  assert.equal(textosPara("5511922222222").at(-1), "Voltei!");
+  assert.equal(textosPara("551122222222").at(-1), "Voltei!");
 });
